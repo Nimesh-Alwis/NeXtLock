@@ -1,26 +1,22 @@
 // Account Manager
 
+const accounts = [];
+
 // Add account
-function addAccount() {
+function addAccount(username, password) {
 
+    const account = {
+        username: username,
+        password: password,
+        updated: new Date()
+    };
+
+    accounts.push(account);
+
+    console.log("Account added");
 }
 
-// Update account
-function updateAccount() {
-
-}
-
-// Delete account
-function deleteAccount() {
-
-}
-
-// Update password
-function updatePassword() {
-
-}
-
-// Load accounts
+// Load accottsee
 function loadAccounts() {
-
+    console.log(accounts);
 }

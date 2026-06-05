@@ -1,21 +1,53 @@
-// Category Manager
+// Categories list
+const categories = [];
 
 // Create a new category
 function createCategory(categoryName) {
 
+    const category = {
+        name: categoryName,
+        accounts: []
+    };
+
+    categories.push(category);
+
+    console.log(`${categoryName} category created`);
 }
 
-// Rename an existing category
-function renameCategory(oldName, newName) {
+// Add account to category
+function addAccountToCategory(
+    categoryName,
+    username,
+    password
+) {
 
-}
+    const category = categories.find(
+        category => category.name === categoryName
+    );
 
-// Delete a category
-function deleteCategory(categoryName) {
+    if (category) {
+
+        const account = {
+            username: username,
+            password: password,
+            updated: new Date()
+        };
+
+        category.accounts.push(account);
+
+        console.log("Account added");
+
+    } else {
+
+        console.log("Category not found");
+
+    }
 
 }
 
 // Load all categories
 function loadCategories() {
-
+    console.log(
+        JSON.stringify(categories, null, 2)
+    );
 }
