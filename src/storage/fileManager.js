@@ -1,7 +1,20 @@
 // File Manager
 
+const fs = require("fs");
+
 // Create file
-function createFile() {
+function createFile(fileName) {
+
+    console.log("Creating file...");
+
+    fs.writeFileSync(
+        `./data/${fileName}.md`,
+        ""
+    );
+
+    console.log(
+        `${fileName}.md created`
+    );
 
 }
 
@@ -11,7 +24,16 @@ function readFile() {
 }
 
 // Write file
-function writeFile() {
+function writeFile(fileName, content) {
+
+    fs.writeFileSync(
+        `data/${fileName}.md`,
+        content
+    );
+
+    console.log(
+        `${fileName}.md updated`
+    );
 
 }
 
@@ -19,3 +41,12 @@ function writeFile() {
 function deleteFile() {
 
 }
+
+// TEST
+createFile("Test");
+
+
+writeFile(
+    "Gmail",
+    "# Gmail\n\nUsername: gk@gmail.com"
+);
