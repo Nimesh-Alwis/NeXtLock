@@ -45,6 +45,50 @@ function addAccountToCategory(
 
 }
 
+function renameCategory(oldName, newName) {
+
+    const category = categories.find(
+        category => category.name === oldName
+    );
+
+    if (category) {
+
+        category.name = newName;
+
+        console.log(
+            `${oldName} renamed to ${newName}`
+        );
+
+    } else {
+
+        console.log("Category not found");
+
+    }
+
+}
+
+function deleteCategory(categoryName) {
+
+    const categoryIndex = categories.findIndex(
+        category => category.name === categoryName
+    );
+
+    if (categoryIndex !== -1) {
+
+        categories.splice(categoryIndex, 1);
+
+        console.log(
+            `${categoryName} category deleted`
+        );
+
+    } else {
+
+        console.log("Category not found");
+
+    }
+
+}
+
 // Load all categories
 function loadCategories() {
     console.log(
