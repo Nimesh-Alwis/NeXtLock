@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- This area shows the account specific details -->
+        <h1>Account Details</h1>
+        
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" value="example@gmail.com" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" value="secret123">
+        </div>
+
+        <div class="meta-info">
+            <p>Last Updated: <span id="update-time">2026-06-07 15:30</span></p>
+        </div>
+
+        <button id="update-btn">Update Password</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
