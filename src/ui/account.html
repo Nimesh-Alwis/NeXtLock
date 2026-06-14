@@ -1,18 +1,33 @@
-import customtkinter as ctk
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-# This creates a 'Frame' (like a <div> in HTML)
-class AccountCard(ctk.CTkFrame):
-    def __init__(self, master):
-        super().__init__(master)
+    <div class="container">
+        <!-- This area shows the account specific details -->
+        <h1>Account Details</h1>
         
-        # This is like a Label in HTML
-        self.label = ctk.CTkLabel(self, text="Gmail Account", font=("Arial", 20))
-        self.label.pack(pady=10)
-        
-        # This is like an Input field in HTML
-        self.entry = ctk.CTkEntry(self, placeholder_text="Enter password")
-        self.entry.pack(pady=5, padx=20)
-        
-        # This is a Button
-        self.btn = ctk.CTkButton(self, text="Save Password")
-        self.btn.pack(pady=10)
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" value="example@gmail.com" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" value="secret123">
+        </div>
+
+        <div class="meta-info">
+            <p>Last Updated: <span id="update-time">2026-06-07 15:30</span></p>
+        </div>
+
+        <button id="update-btn">Update Password</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
