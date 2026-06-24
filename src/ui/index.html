@@ -1,28 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>NextLock - Home</title>
+    <title>NeXtLock</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>NextLock</h1>
-        <button id="add-category-btn">+ New Category</button>
-    </header>
 
-    <main id="category-container">
-        <div class="category-card">
-            <h3>Gmail</h3>
-            <p>3 accounts</p>
-        </div>
-        
-        <div class="category-card">
-            <h3>Facebook</h3>
-            <p>1 account</p>
-        </div>
-    </main>
+    <h1>🔐 NeXtLock</h1>
+
+    <div class="add-category">
+        <input
+            type="text"
+            id="categoryInput"
+            placeholder="Category Name"
+        >
+
+        <button id="createBtn">
+            Create Category
+        </button>
+    </div>
+
+    <h2>Categories</h2>
+
+    <div id="categoryList"></div>
 
     <script src="app.js"></script>
+
 </body>
 </html>
