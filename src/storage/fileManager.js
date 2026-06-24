@@ -19,8 +19,14 @@ function createFile(fileName) {
 }
 
 // Read file
-function readFile() {
+function readFile(fileName) {
 
+    const content = fs.readFileSync(
+        `data/${fileName}.md`,
+        "utf8"
+    );
+
+    console.log(content);
 }
 
 // Write file
