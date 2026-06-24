@@ -44,12 +44,20 @@ function writeFile(fileName, content) {
 }
 
 // Delete file
-function deleteFile() {
+// Delete file
+function deleteFile(fileName) {
 
+    fs.unlinkSync(
+        `data/${fileName}.md`
+    );
+
+    console.log(
+        `${fileName}.md deleted`
+    );
 }
 
 // TEST
-createFile("Test");
+deleteFile("Test");
 
 
 writeFile(
