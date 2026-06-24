@@ -56,6 +56,18 @@ function deleteFile(fileName) {
     );
 }
 
+function renameFile(oldFileName, newFileName) {
+
+    fs.renameSync(
+        `./data/${oldFileName}.md`,
+        `./data/${newFileName}.md`
+    );
+
+    console.log(
+        `${oldFileName}.md renamed to ${newFileName}.md`
+    );
+}
+
 // TEST
 //deleteFile("Test");
 
@@ -70,5 +82,6 @@ module.exports = {
     createFile,
     readFile,
     writeFile,
-    deleteFile
+    deleteFile,
+    renameFile
 };

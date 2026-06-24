@@ -1,8 +1,11 @@
-
 const {
     createFile,
-    writeFile
+    writeFile,
+    renameFile,
+    deleteFile
 } = require("../storage/fileManager");
+
+
 // Categories list
 const categories = [];
  
@@ -73,6 +76,11 @@ function renameCategory(oldName, newName) {
 
         category.name = newName;
 
+        renameFile(
+            oldName,
+            newName
+        );
+
         console.log(
             `${oldName} renamed to ${newName}`
         );
@@ -82,7 +90,6 @@ function renameCategory(oldName, newName) {
         console.log("Category not found");
 
     }
-
 }
 
 function deleteCategory(categoryName) {
@@ -93,7 +100,12 @@ function deleteCategory(categoryName) {
 
     if (categoryIndex !== -1) {
 
-        categories.splice(categoryIndex, 1);
+        categories.splice(
+            categoryIndex,
+            1
+        );
+
+        deleteFile(categoryName);
 
         console.log(
             `${categoryName} category deleted`
@@ -104,7 +116,6 @@ function deleteCategory(categoryName) {
         console.log("Category not found");
 
     }
-
 }
 
 // Load all categories
@@ -114,6 +125,16 @@ function loadCategories() {
     );
 }
 
+// Export functions
+module.exports = {
+    createCategory,
+    addAccountToCategory,
+    updatePassword,
+    deleteAccount,
+    renameCategory,
+    deleteCategory,
+    loadCategories
+};
 
 function updatePassword(
     categoryName,
@@ -230,3 +251,23 @@ deleteAccount(
 );
 
 loadCategories();*/
+
+
+/* test renam eCategory
+createCategory("Gmail");
+
+renameCategory(
+    "Gmail",
+    "Google"
+);
+
+loadCategories(); */
+
+
+/* createCategory("Facebook");
+
+loadCategories();
+
+deleteCategory("Facebook");
+
+loadCategories(); */
