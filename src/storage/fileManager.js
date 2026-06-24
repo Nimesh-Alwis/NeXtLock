@@ -57,10 +57,18 @@ function deleteFile(fileName) {
 }
 
 // TEST
-deleteFile("Test");
+//deleteFile("Test");
 
 
-writeFile(
-    "Gmail",
-    "# Gmail\n\nUsername: gk@gmail.com"
-);
+//writeFile(
+  //  "Gmail",
+    //"# Gmail\n\nUsername: gk@gmail.com"
+//);
+
+
+module.exports = {
+    createFile,
+    readFile,
+    writeFile,
+    deleteFile
+};

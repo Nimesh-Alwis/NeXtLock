@@ -1,15 +1,22 @@
+
+const {
+    createFile,
+    writeFile
+} = require("../storage/fileManager");
 // Categories list
 const categories = [];
-
+ 
 // Create a new category
 function createCategory(categoryName) {
 
     const category = {
         name: categoryName,
-        accounts: []
+        accounts: [] 
     };
 
     categories.push(category);
+
+    createFile(categoryName);
 
     console.log(`${categoryName} category created`);
 }
@@ -34,6 +41,17 @@ function addAccountToCategory(
         };
 
         category.accounts.push(account);
+
+        let content = `# ${category.name}\n\n`;
+
+category.accounts.forEach(account => {
+    content += `### ${account.username}\n\n`;
+    content += `Password: ${account.password}\n\n`;
+    content += `Updated: ${account.updated}\n\n`;
+});
+
+writeFile(category.name, content);
+
 
         console.log("Account added");
 
@@ -95,3 +113,120 @@ function loadCategories() {
         JSON.stringify(categories, null, 2)
     );
 }
+
+
+function updatePassword(
+    categoryName,
+    username,
+    newPassword
+) {
+
+    const category = categories.find(
+        category => category.name === categoryName
+    );
+
+    if (!category) {
+        console.log("Category not found");
+        return;
+    }
+
+    const account = category.accounts.find(
+        account => account.username === username
+    );
+
+    if (!account) {
+        console.log("Account not found");
+        return;
+    }
+
+    account.password = newPassword;
+    account.updated = new Date();
+
+    let content = `# ${category.name}\n\n`;
+
+    category.accounts.forEach(account => {
+        content += `### ${account.username}\n\n`;
+        content += `Password: ${account.password}\n\n`;
+        content += `Updated: ${account.updated}\n\n`;
+    });
+
+    writeFile(category.name, content);
+
+    console.log("Password updated");
+}
+
+
+
+
+function deleteAccount(
+    categoryName,
+    username
+) {
+
+    const category = categories.find(
+        category => category.name === categoryName
+    );
+
+    if (!category) {
+        console.log("Category not found");
+        return;
+    }
+
+    const accountIndex =
+        category.accounts.findIndex(
+            account =>
+                account.username === username
+        );
+
+    if (accountIndex === -1) {
+        console.log("Account not found");
+        return;
+    }
+
+    category.accounts.splice(
+        accountIndex,
+        1
+    );
+
+    let content = `# ${category.name}\n\n`;
+
+    category.accounts.forEach(account => {
+        content += `### ${account.username}\n\n`;
+        content += `Password: ${account.password}\n\n`;
+        content += `Updated: ${account.updated}\n\n`;
+    });
+
+    writeFile(category.name, content);
+
+    console.log("Account deleted");
+}
+
+
+
+
+//createCategory("Gmail");
+
+/*addAccountToCategory(
+    "Gmail",
+    "gk@gmail.com",
+    "123456"
+);
+
+addAccountToCategory(
+    "Gmail",
+    "gk.work@gmail.com",
+    "abcdef"
+);
+
+updatePassword(
+    "Gmail",
+    "gk@gmail.com",
+    "abc123"
+);
+
+deleteAccount(
+    "Gmail",
+    "gk.work@gmail.com"
+);
+
+loadCategories();*/
