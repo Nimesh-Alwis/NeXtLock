@@ -13,3 +13,13 @@ button {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.add-account {
+    margin-top: 20px;
+}
+
+.add-account input {
+    display: block;
+    margin-bottom: 10px;
+    width: 300px;
+}
