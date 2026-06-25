@@ -1,4 +1,14 @@
-const categories = [];
+const savedCategories =
+    localStorage.getItem(
+        "categories"
+    );
+
+const categories =
+    savedCategories
+        ? JSON.parse(savedCategories)
+        : [];
+
+
 
 const input =
     document.getElementById(
@@ -20,7 +30,7 @@ button.addEventListener(
     function () {
 
         const categoryName =
-            input.value;
+            input.value.trim();
 
         if (categoryName === "") {
             alert(
@@ -29,8 +39,22 @@ button.addEventListener(
             return;
         }
 
+        if (
+            categories.includes(categoryName)
+        ) {
+            alert(
+                "Category already exists"
+            );
+            return;
+        }
+
         categories.push(
             categoryName
+        );
+
+        localStorage.setItem(
+            "categories",
+            JSON.stringify(categories)
         );
 
         renderCategories();
@@ -54,8 +78,44 @@ function renderCategories() {
             div.className =
                 "category-card";
 
-            div.textContent =
-                category;
+            div.innerHTML = `
+    <h3>${category}</h3>
+    <button class="delete-btn">
+        Delete
+    </button>
+`;
+
+const deleteButton =
+    div.querySelector(
+        ".delete-btn"
+    );
+
+    
+   // 👇 මෙතන click event එක add කරනවා
+        deleteButton.addEventListener(
+            "click",
+            function () {
+
+                const index =
+                    categories.indexOf(
+                        category
+                    );
+
+                categories.splice(
+                    index,
+                    1
+                );
+
+                localStorage.setItem(
+                    "categories",
+                    JSON.stringify(categories)
+                );
+
+                renderCategories();
+            }
+        );
+
+
 
             list.appendChild(
                 div
@@ -63,3 +123,5 @@ function renderCategories() {
         }
     );
 }
+
+renderCategories();

@@ -1,21 +1,12 @@
 /* Modern Dark Theme Design */
+
 body {
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background: #1e1e1e;
     color: white;
     padding: 30px;
+    margin: 0;
 }
-
-input {
-    padding: 10px;
-    width: 250px;
-}
-
-button {
-    padding: 10px;
-    cursor: pointer;
-}
-
 
 header {
     display: flex;
@@ -25,27 +16,23 @@ header {
     padding-bottom: 20px;
 }
 
-#category-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
+/* Input */
 
-.category-card {
-    background-color: #1e1e1e;
-    padding: 20px;
-    margin-top: 10px;
-    border-radius: 12px;
+input {
+    padding: 10px;
+    width: 250px;
+    border-radius: 6px;
     border: 1px solid #333;
-    transition: transform 0.2s;
-    cursor: pointer;
+    background: #2d2d2d;
+    color: white;
+    outline: none;
 }
 
-.category-card:hover {
-    transform: scale(1.05);
+input:focus {
     border-color: #1f85de;
 }
+
+/* Buttons */
 
 button {
     background-color: #1f85de;
@@ -54,4 +41,50 @@ button {
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Category Grid */
+
+#categoryList {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(200px, 1fr)
+        );
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Category Card */
+
+.category-card {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    transition: transform 0.2s;
+}
+
+.category-card:hover {
+    transform: scale(1.05);
+    border-color: #1f85de;
+}
+
+/* Category Title */
+
+.category-card h3 {
+    margin-top: 0;
+}
+
+/* Delete Button */
+
+.delete-btn {
+    margin-top: 15px;
+    width: 100%;
 }
