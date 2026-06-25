@@ -17,7 +17,6 @@ const accounts =
         ? JSON.parse(savedAccounts)
         : [];
 
-
 const usernameInput =
     document.getElementById(
         "usernameInput"
@@ -37,7 +36,6 @@ const accountList =
     document.getElementById(
         "accountList"
     );
-        
 
 document.getElementById(
     "backBtn"
@@ -106,11 +104,81 @@ function renderAccounts() {
 
             div.innerHTML = `
                 <h3>${account.username}</h3>
+
                 <p>
                     Password:
                     ${account.password}
                 </p>
+
+                <button class="edit-btn">
+                    Edit Password
+                </button>
+
+                <button class="delete-btn">
+                    Delete Account
+                </button>
             `;
+
+            const editButton =
+                div.querySelector(
+                    ".edit-btn"
+                );
+
+            const deleteButton =
+                div.querySelector(
+                    ".delete-btn"
+                );
+
+            editButton.addEventListener(
+                "click",
+                function () {
+
+                    const newPassword =
+                        prompt(
+                            "Enter new password:"
+                        );
+
+                    if (
+                        !newPassword ||
+                        newPassword.trim() === ""
+                    ) {
+                        return;
+                    }
+
+                    account.password =
+                        newPassword.trim();
+
+                    localStorage.setItem(
+                        category + "_accounts",
+                        JSON.stringify(accounts)
+                    );
+
+                    renderAccounts();
+                }
+            );
+
+            deleteButton.addEventListener(
+                "click",
+                function () {
+
+                    const index =
+                        accounts.indexOf(
+                            account
+                        );
+
+                    accounts.splice(
+                        index,
+                        1
+                    );
+
+                    localStorage.setItem(
+                        category + "_accounts",
+                        JSON.stringify(accounts)
+                    );
+
+                    renderAccounts();
+                }
+            );
 
             accountList.appendChild(
                 div
@@ -119,7 +187,4 @@ function renderAccounts() {
     );
 }
 
-
-
-
-    renderAccounts();
+renderAccounts();
