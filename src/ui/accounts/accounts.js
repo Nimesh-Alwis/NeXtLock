@@ -78,7 +78,7 @@ addButton.addEventListener(
         const account = {
     username,
     password,
-    updated: new Date().toLocaleString()
+    updated: new Date().toISOString()
 };
 
         accounts.push(account);
@@ -94,6 +94,25 @@ addButton.addEventListener(
         passwordInput.value = "";
     }
 );
+
+function formatDate(date) {
+
+    return new Date(date)
+        .toLocaleString(
+            "en-GB",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            }
+        )
+        .replace(",", " •");
+}
+
+
 
 function renderAccounts(
     searchText = ""
@@ -123,13 +142,13 @@ function renderAccounts(
             div.className =
                 "category-card";
 
-            div.innerHTML = `
+         div.innerHTML = `
     <h3>${account.username}</h3>
 
     <p>
-    Last Updated:
-    ${account.updated}
-</p>
+        Last Updated:
+        ${formatDate(account.updated)}
+    </p>
 
     <p class="password-text">
         Password: ********
@@ -262,7 +281,7 @@ copyButton.addEventListener(
                         newPassword.trim();
 
                     account.updated =
-                       new Date().toLocaleString();    
+    new Date().toISOString();   
 
                     localStorage.setItem(
                         category + "_accounts",
