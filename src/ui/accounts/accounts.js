@@ -296,6 +296,18 @@ copyButton.addEventListener(
                 "click",
                 function () {
 
+                    const confirmed =
+     confirm(
+`Are you sure you want to delete this account?
+
+Username:
+${account.username}`
+    );
+
+if (!confirmed) {
+    return;
+}
+
                     const index =
                         accounts.indexOf(
                             account
