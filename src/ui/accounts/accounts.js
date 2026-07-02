@@ -76,9 +76,10 @@ addButton.addEventListener(
         }
 
         const account = {
-            username,
-            password
-        };
+    username,
+    password,
+    updated: new Date().toLocaleString()
+};
 
         accounts.push(account);
 
@@ -124,6 +125,11 @@ function renderAccounts(
 
             div.innerHTML = `
     <h3>${account.username}</h3>
+
+    <p>
+    Last Updated:
+    ${account.updated}
+</p>
 
     <p class="password-text">
         Password: ********
@@ -254,6 +260,9 @@ copyButton.addEventListener(
 
                     account.password =
                         newPassword.trim();
+
+                    account.updated =
+                       new Date().toLocaleString();    
 
                     localStorage.setItem(
                         category + "_accounts",
