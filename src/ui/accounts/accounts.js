@@ -130,12 +130,16 @@ function renderAccounts(
     </p>
 
     <button class="show-btn">
-        Show
-    </button>
+    Show
+</button>
 
-    <button class="copy-btn">
-        Copy Password
-    </button>
+<button class="copy-user-btn">
+    Copy Username
+</button>
+
+<button class="copy-btn">
+    Copy Password
+</button>
 
     <button class="edit-btn">
         Edit Password
@@ -155,6 +159,11 @@ const passwordText =
 const showButton =
     div.querySelector(
         ".show-btn"
+    );
+
+const copyUserButton =
+    div.querySelector(
+        ".copy-user-btn"
     );
 
 const copyButton =
@@ -199,6 +208,19 @@ showButton.addEventListener(
     }
 );
 
+copyUserButton.addEventListener(
+    "click",
+    function () {
+
+        navigator.clipboard.writeText(
+            account.username
+        );
+
+        alert(
+            "Username copied!"
+        );
+    }
+);
 
 copyButton.addEventListener(
     "click",
