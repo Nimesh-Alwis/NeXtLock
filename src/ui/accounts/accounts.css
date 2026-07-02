@@ -23,3 +23,17 @@ button {
     margin-bottom: 10px;
     width: 300px;
 }
+
+.category-card {
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    margin-top: 20px;
+}
+
+.category-card button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+}

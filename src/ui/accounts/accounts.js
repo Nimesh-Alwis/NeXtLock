@@ -103,31 +103,96 @@ function renderAccounts() {
                 "category-card";
 
             div.innerHTML = `
-                <h3>${account.username}</h3>
+    <h3>${account.username}</h3>
 
-                <p>
-                    Password:
-                    ${account.password}
-                </p>
+    <p class="password-text">
+        Password: ********
+    </p>
 
-                <button class="edit-btn">
-                    Edit Password
-                </button>
+    <button class="show-btn">
+        Show
+    </button>
 
-                <button class="delete-btn">
-                    Delete Account
-                </button>
-            `;
+    <button class="copy-btn">
+        Copy Password
+    </button>
 
-            const editButton =
-                div.querySelector(
-                    ".edit-btn"
-                );
+    <button class="edit-btn">
+        Edit Password
+    </button>
 
-            const deleteButton =
-                div.querySelector(
-                    ".delete-btn"
-                );
+    <button class="delete-btn">
+        Delete Account
+    </button>
+`;
+
+ 
+const passwordText =
+    div.querySelector(
+        ".password-text"
+    );
+
+const showButton =
+    div.querySelector(
+        ".show-btn"
+    );
+
+const copyButton =
+    div.querySelector(
+        ".copy-btn"
+    );
+
+const editButton =
+    div.querySelector(
+        ".edit-btn"
+    );
+
+const deleteButton =
+    div.querySelector(
+        ".delete-btn"
+    );
+
+let visible = false;
+
+showButton.addEventListener(
+    "click",
+    function () {
+
+        visible = !visible;
+
+        if (visible) {
+
+            passwordText.textContent =
+                `Password: ${account.password}`;
+
+            showButton.textContent =
+                "Hide";
+
+        } else {
+
+            passwordText.textContent =
+                "Password: ********";
+
+            showButton.textContent =
+                "Show";
+        }
+    }
+);
+
+
+copyButton.addEventListener(
+    "click",
+    function () {
+
+        navigator.clipboard.writeText(
+            account.password
+        );
+
+        alert(
+            "Password copied!"
+        );
+    }
+);
 
             editButton.addEventListener(
                 "click",
