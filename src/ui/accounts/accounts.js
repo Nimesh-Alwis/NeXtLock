@@ -37,6 +37,13 @@ const accountList =
         "accountList"
     );
 
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+    
+    
+
 document.getElementById(
     "backBtn"
 ).addEventListener(
@@ -87,11 +94,24 @@ addButton.addEventListener(
     }
 );
 
-function renderAccounts() {
+function renderAccounts(
+    searchText = ""
+) {
 
     accountList.innerHTML = "";
 
-    accounts.forEach(
+    accounts
+    .filter(
+        function (account) {
+
+            return account.username
+                .toLowerCase()
+                .includes(
+                    searchText.toLowerCase()
+                );
+        }
+    )
+    .forEach(
         function (account) {
 
             const div =
@@ -251,5 +271,15 @@ copyButton.addEventListener(
         }
     );
 }
+
+searchInput.addEventListener(
+    "input",
+    function () {
+
+        renderAccounts(
+            searchInput.value
+        );
+    }
+);
 
 renderAccounts();
