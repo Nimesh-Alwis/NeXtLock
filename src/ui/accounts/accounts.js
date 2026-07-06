@@ -320,6 +320,65 @@ exportButton.addEventListener(
     }
 );
 
+importFile.addEventListener(
+    "change",
+    function (event) {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) return;
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+            function (e) {
+
+                try {
+
+                    const importedData =
+                        JSON.parse(
+                            e.target.result
+                        );
+
+                    if (!Array.isArray(importedData)) {
+                        alert("Invalid backup file!");
+                        return;
+                    }
+
+                    accounts.length = 0;
+
+                    importedData.forEach(
+                        acc => accounts.push(acc)
+                    );
+
+                    localStorage.setItem(
+                        category + "_accounts",
+                        JSON.stringify(accounts)
+                    );
+
+                    renderAccounts();
+
+                    alert("Import successful!");
+
+                } catch (error) {
+                    alert("Invalid JSON file!");
+                    console.log(error);
+                }
+            };
+
+        reader.readAsText(file);
+    }
+);
+
+importButton.addEventListener(
+    "click",
+    function () {
+
+        importFile.click();
+    }
+);
 
 function renderAccounts(
     searchText = ""
