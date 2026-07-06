@@ -52,6 +52,22 @@ const accountList =
         "accountList"
     );
 
+const exportButton =
+    document.getElementById(
+        "exportBtn"
+    );
+
+const importButton =
+    document.getElementById(
+        "importBtn"
+    );
+
+const importFile =
+    document.getElementById(
+        "importFile"
+    );
+
+
 const searchInput =
     document.getElementById(
         "searchInput"
@@ -259,6 +275,50 @@ function formatDate(date) {
         .replace(",", " •");
 }
 
+
+exportButton.addEventListener(
+    "click",
+    function () {
+
+        const backup =
+            JSON.stringify(
+                accounts,
+                null,
+                4
+            );
+
+        const blob =
+            new Blob(
+                [backup],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href = url;
+
+        link.download =
+            category +
+            "_backup.json";
+
+        link.click();
+
+        URL.revokeObjectURL(
+            url
+        );
+    }
+);
 
 
 function renderAccounts(
