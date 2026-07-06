@@ -27,6 +27,11 @@ const passwordInput =
         "passwordInput"
     );
 
+const strengthText =
+    document.getElementById(
+        "strengthText"
+    );
+
 const addButton =
     document.getElementById(
         "addAccountBtn"
@@ -91,15 +96,75 @@ function generatePassword() {
     return password;
 }
 
+
+function checkPasswordStrength(
+    password
+) {
+
+    let score = 0;
+
+    if (
+        password.length >= 8
+    ) {
+        score++;
+    }
+
+    if (
+        /[A-Z]/.test(password)
+    ) {
+        score++;
+    }
+
+    if (
+        /[a-z]/.test(password)
+    ) {
+        score++;
+    }
+
+    if (
+        /[0-9]/.test(password)
+    ) {
+        score++;
+    }
+
+    if (
+        /[^A-Za-z0-9]/.test(password)
+    ) {
+        score++;
+    }
+
+    if (
+        score <= 2
+    ) {
+
+        strengthText.textContent =
+            "🔴 Strength: Weak";
+
+    } else if (
+        score <= 4
+    ) {
+
+        strengthText.textContent =
+            "🟡 Strength: Medium";
+
+    } else {
+
+        strengthText.textContent =
+            "🟢 Strength: Strong";
+    }
+}
 generateButton.addEventListener(
     "click",
     function () {
 
         passwordInput.value =
             generatePassword();
+
+        checkPasswordStrength(
+            passwordInput.value
+        );
     }
 );
-
 
 togglePasswordButton.addEventListener(
     "click",
@@ -124,6 +189,16 @@ togglePasswordButton.addEventListener(
             togglePasswordButton.textContent =
                 "Show Password";
         }
+    }
+);
+
+passwordInput.addEventListener(
+    "input",
+    function () {
+
+        checkPasswordStrength(
+            passwordInput.value
+        );
     }
 );
 
