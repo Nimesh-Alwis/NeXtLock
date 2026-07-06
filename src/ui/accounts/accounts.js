@@ -32,6 +32,12 @@ const addButton =
         "addAccountBtn"
     );
 
+const generateButton =
+    document.getElementById(
+        "generateBtn"
+    );    
+
+
 const accountList =
     document.getElementById(
         "accountList"
@@ -52,6 +58,41 @@ document.getElementById(
 
         window.location.href =
             "../index.html";
+    }
+);
+
+function generatePassword() {
+
+    const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=";
+
+    let password = "";
+
+    for (
+        let i = 0;
+        i < 16;
+        i++
+    ) {
+
+        const randomIndex =
+            Math.floor(
+                Math.random() *
+                characters.length
+            );
+
+        password +=
+            characters[randomIndex];
+    }
+
+    return password;
+}
+
+generateButton.addEventListener(
+    "click",
+    function () {
+
+        passwordInput.value =
+            generatePassword();
     }
 );
 
@@ -205,6 +246,9 @@ const deleteButton =
     div.querySelector(
         ".delete-btn"
     );
+
+
+
 
 let visible = false;
 
