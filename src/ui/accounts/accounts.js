@@ -37,6 +37,10 @@ const generateButton =
         "generateBtn"
     );    
 
+const togglePasswordButton =
+    document.getElementById(
+        "togglePasswordBtn"
+    );
 
 const accountList =
     document.getElementById(
@@ -93,6 +97,33 @@ generateButton.addEventListener(
 
         passwordInput.value =
             generatePassword();
+    }
+);
+
+
+togglePasswordButton.addEventListener(
+    "click",
+    function () {
+
+        if (
+            passwordInput.type ===
+            "password"
+        ) {
+
+            passwordInput.type =
+                "text";
+
+            togglePasswordButton.textContent =
+                "Hide Password";
+
+        } else {
+
+            passwordInput.type =
+                "password";
+
+            togglePasswordButton.textContent =
+                "Show Password";
+        }
     }
 );
 
