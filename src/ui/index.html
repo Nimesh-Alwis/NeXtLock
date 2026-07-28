@@ -103,9 +103,9 @@
         </div>
     </div>
 
-    <!-- Modal for Adding New Category -->
+    <!-- Modal for Adding New Category with WhatsApp Style Emoji Selector -->
     <div id="addCategoryModal" class="modal-overlay hidden">
-        <div class="modal-content">
+        <div class="modal-content modal-lg">
             <div class="modal-header">
                 <h3>Create New Category</h3>
                 <button class="modal-close" id="closeCategoryModalBtn">&times;</button>
@@ -113,19 +113,64 @@
             <div class="modal-body">
                 <label for="categoryInput">Category Name</label>
                 <div class="input-wrapper">
-                    <input type="text" id="categoryInput" placeholder="e.g. Social Media, Work, Financial">
+                    <input type="text" id="categoryInput" placeholder="e.g. Social Media, Personal, Crypto">
                 </div>
+                
+                <!-- WhatsApp Style Emoji Picker -->
                 <div class="icon-selector">
-                    <label>Choose Icon:</label>
-                    <div class="icon-options">
-                        <button type="button" class="icon-opt active" data-icon="📁">📁</button>
-                        <button type="button" class="icon-opt" data-icon="💼">💼</button>
-                        <button type="button" class="icon-opt" data-icon="🌐">🌐</button>
-                        <button type="button" class="icon-opt" data-icon="🏦">🏦</button>
-                        <button type="button" class="icon-opt" data-icon="🔒">🔒</button>
-                        <button type="button" class="icon-opt" data-icon="🔑">🔑</button>
-                        <button type="button" class="icon-opt" data-icon="🎮">🎮</button>
-                        <button type="button" class="icon-opt" data-icon="📱">📱</button>
+                    <label>Choose Icon (WhatsApp Emoji Picker):</label>
+                    <div class="emoji-picker-container">
+                        <div class="emoji-tabs">
+                            <button type="button" class="emoji-tab active" data-group="popular">🔥 All</button>
+                            <button type="button" class="emoji-tab" data-group="social">💬 Social</button>
+                            <button type="button" class="emoji-tab" data-group="work">💼 Work</button>
+                            <button type="button" class="emoji-tab" data-group="finance">🏦 Finance</button>
+                            <button type="button" class="emoji-tab" data-group="media">🎮 Media</button>
+                        </div>
+                        <div class="icon-options-grid" id="iconOptionsGrid">
+                            <!-- Popular Emojis -->
+                            <button type="button" class="icon-opt active" data-group="popular social" data-icon="💬">💬</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="🌐">🌐</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="👥">👥</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="📱">📱</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="📧">📧</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="📸">📸</button>
+                            <button type="button" class="icon-opt" data-group="popular social" data-icon="🐦">🐦</button>
+
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="📁">📁</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="📂">📂</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="💼">💼</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="📊">📊</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="📝">📝</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="🏢">🏢</button>
+                            <button type="button" class="icon-opt" data-group="popular work" data-icon="🎓">🎓</button>
+
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🏦">🏦</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="💳">💳</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🪙">🪙</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="💰">💰</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🔒">🔒</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🔑">🔑</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🔐">🔐</button>
+                            <button type="button" class="icon-opt" data-group="popular finance" data-icon="🛡️">🛡️</button>
+
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="📺">📺</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🎵">🎵</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🎮">🎮</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🎧">🎧</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🍿">🍿</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🎨">🎨</button>
+                            <button type="button" class="icon-opt" data-group="popular media" data-icon="🚀">🚀</button>
+
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="💡">💡</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="🤖">🤖</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="⚡">⚡</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="🌟">🌟</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="🏠">🏠</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="🛒">🛒</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="✈️">✈️</button>
+                            <button type="button" class="icon-opt" data-group="popular" data-icon="🍔">🍔</button>
+                        </div>
                     </div>
                 </div>
             </div>

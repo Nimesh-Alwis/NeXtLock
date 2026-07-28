@@ -7,12 +7,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let categories = JSON.parse(localStorage.getItem("categories") || "[]");
     let accountsData = JSON.parse(localStorage.getItem("accounts") || "{}");
+    let iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
 
-    // Initialize default categories if none exist
+    // Initialize default categories and pre-populated popular accounts if brand new
     if (categories.length === 0) {
-        categories = ["Work", "Social Media", "Streaming", "Banking"];
+        categories = ["Social Media", "Work & Professional", "Streaming & Entertainment", "Banking & Finance"];
         localStorage.setItem("categories", JSON.stringify(categories));
+
+        // Default Icon mappings
+        iconMap = {
+            "Social Media": "💬",
+            "Work & Professional": "💼",
+            "Streaming & Entertainment": "📺",
+            "Banking & Finance": "🏦"
+        };
+        localStorage.setItem("categoryIcons", JSON.stringify(iconMap));
     }
+
+    // Pre-populate main social media and popular accounts if empty or not fully populated
+    if (!accountsData["Social Media"] || accountsData["Social Media"].length < 6) {
+        accountsData["Social Media"] = [
+            { id: "sm-1", service: "Instagram", username: "@insta_official", password: "InstaSecurePass!99", created: new Date().toLocaleDateString() },
+            { id: "sm-2", service: "Facebook", username: "user.meta@facebook.com", password: "FacebookPass#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-3", service: "Snapchat", username: "snap_user2026", password: "SnapchatKeyPass#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-4", service: "WhatsApp", username: "+94 77 123 4567", password: "WhatsAppPass#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-5", service: "TikTok", username: "@tiktok_creator", password: "TikTokPassword#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-6", service: "Telegram", username: "@telegram_user", password: "TelegramSecret#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-7", service: "X (Twitter)", username: "@x_handle", password: "TwitterPasskey#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-8", service: "YouTube", username: "channel@youtube.com", password: "YTStreamPass#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-9", service: "Reddit", username: "u/reddit_user", password: "RedditKarmaPass#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-10", service: "Pinterest", username: "pinterest_pins", password: "PinterestPin#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-11", service: "LinkedIn", username: "user@linkedin.com", password: "LinkedInWorkKey#2026", created: new Date().toLocaleDateString() },
+            { id: "sm-12", service: "Google / Gmail", username: "user@gmail.com", password: "GoogleVaultKey#2026", created: new Date().toLocaleDateString() }
+        ];
+    }
+
+    if (!accountsData["Work & Professional"]) {
+        accountsData["Work & Professional"] = [
+            { id: "wk-1", service: "GitHub", username: "dev_user", password: "GitHubSecretKey!88", created: new Date().toLocaleDateString() },
+            { id: "wk-2", service: "Slack", username: "work@company.com", password: "SlackCompanyPass#2026", created: new Date().toLocaleDateString() },
+            { id: "wk-3", service: "Microsoft 365", username: "user@office.com", password: "MS365Passcode#1", created: new Date().toLocaleDateString() }
+        ];
+    }
+
+    if (!accountsData["Streaming & Entertainment"]) {
+        accountsData["Streaming & Entertainment"] = [
+            { id: "st-1", service: "Netflix", username: "movie_lover@gmail.com", password: "NetflixStreamPass#2026", created: new Date().toLocaleDateString() },
+            { id: "st-2", service: "Spotify", username: "music_fan@gmail.com", password: "SpotifyMusicPass#2026", created: new Date().toLocaleDateString() },
+            { id: "st-3", service: "YouTube Premium", username: "user@gmail.com", password: "YTPremiumPass#2026", created: new Date().toLocaleDateString() }
+        ];
+    }
+
+    if (!accountsData["Banking & Finance"]) {
+        accountsData["Banking & Finance"] = [
+            { id: "fn-1", service: "PayPal", username: "pay@example.com", password: "PayPalSecure$2026", created: new Date().toLocaleDateString() },
+            { id: "fn-2", service: "Commercial Bank", username: "user_bank_id", password: "BankKeyPass#77", created: new Date().toLocaleDateString() }
+        ];
+    }
+
+    localStorage.setItem("accounts", JSON.stringify(accountsData));
 
     const categoryList = document.getElementById("categoryList");
     const searchCategoryInput = document.getElementById("searchCategoryInput");
@@ -26,9 +79,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelCategoryModalBtn = document.getElementById("cancelCategoryModalBtn");
     const createBtn = document.getElementById("createBtn");
     const categoryInput = document.getElementById("categoryInput");
+    
+    const emojiTabs = document.querySelectorAll(".emoji-tab");
     const iconOpts = document.querySelectorAll(".icon-opt");
     
-    let selectedIcon = "📁";
+    let selectedIcon = "💬";
 
     // Lock Vault Handlers
     const lockButtons = [
@@ -48,7 +103,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Icon Selector Listener
+    // Emoji Tab Filtering
+    emojiTabs.forEach(tab => {
+        tab.addEventListener("click", function () {
+            emojiTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            const group = this.getAttribute("data-group");
+
+            iconOpts.forEach(opt => {
+                const optGroups = opt.getAttribute("data-group") || "";
+                if (group === "popular" || optGroups.includes(group)) {
+                    opt.style.display = "flex";
+                } else {
+                    opt.style.display = "none";
+                }
+            });
+        });
+    });
+
+    // Emoji Selection Listener
     iconOpts.forEach(btn => {
         btn.addEventListener("click", function () {
             iconOpts.forEach(b => b.classList.remove("active"));
@@ -96,13 +169,13 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("categories", JSON.stringify(categories));
         
         // Save category icon mapping
-        const iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
-        iconMap[name] = selectedIcon;
-        localStorage.setItem("categoryIcons", JSON.stringify(iconMap));
+        const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+        icons[name] = selectedIcon;
+        localStorage.setItem("categoryIcons", JSON.stringify(icons));
 
         renderCategories();
         closeModal();
-        showToast(`Category "${name}" created!`);
+        showToast(`Category "${name}" created with icon ${selectedIcon}`);
     });
 
     // Live Search Filter
@@ -111,13 +184,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function getCategoryIcon(catName) {
-        const iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
-        if (iconMap[catName]) return iconMap[catName];
+        const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+        if (icons[catName]) return icons[catName];
         
         const lower = catName.toLowerCase();
-        if (lower.includes("work") || lower.includes("job")) return "💼";
-        if (lower.includes("social") || lower.includes("media")) return "👥";
-        if (lower.includes("stream") || lower.includes("video")) return "📺";
+        if (lower.includes("social") || lower.includes("media") || lower.includes("chat")) return "💬";
+        if (lower.includes("work") || lower.includes("job") || lower.includes("company")) return "💼";
+        if (lower.includes("stream") || lower.includes("video") || lower.includes("movie")) return "📺";
         if (lower.includes("bank") || lower.includes("finance") || lower.includes("pay")) return "🏦";
         if (lower.includes("game") || lower.includes("gaming")) return "🎮";
         if (lower.includes("crypto")) return "🪙";
@@ -195,11 +268,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     // Migrate icon
-                    const iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
-                    if (iconMap[category]) {
-                        iconMap[trimmed] = iconMap[category];
-                        delete iconMap[category];
-                        localStorage.setItem("categoryIcons", JSON.stringify(iconMap));
+                    const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+                    if (icons[category]) {
+                        icons[trimmed] = icons[category];
+                        delete icons[category];
+                        localStorage.setItem("categoryIcons", JSON.stringify(icons));
                     }
 
                     localStorage.setItem("categories", JSON.stringify(categories));
@@ -217,10 +290,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     categories.splice(idx, 1);
                     delete accountsData[category];
 
-                    const iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
-                    if (iconMap[category]) {
-                        delete iconMap[category];
-                        localStorage.setItem("categoryIcons", JSON.stringify(iconMap));
+                    const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+                    if (icons[category]) {
+                        delete icons[category];
+                        localStorage.setItem("categoryIcons", JSON.stringify(icons));
                     }
 
                     localStorage.setItem("categories", JSON.stringify(categories));
