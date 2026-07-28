@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeXtLock - Vault Login</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <!-- Dynamic Animated Background Orbs -->
+    <div class="bg-glow orb-1"></div>
+    <div class="bg-glow orb-2"></div>
+
+    <div class="window">
+        <!-- macOS Window Title Bar -->
+        <div class="title-bar">
+            <div class="window-controls">
+                <div class="control close" title="Close"></div>
+                <div class="control minimize" title="Minimize"></div>
+                <div class="control maximize" title="Maximize"></div>
+            </div>
+            <div class="window-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                NeXtLock Vault Security
+            </div>
+        </div>
+
+        <div class="login-content">
+            <!-- Animated Shield Logo -->
+            <div class="logo-container">
+                <div class="logo-badge">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        <circle cx="12" cy="16" r="1"></circle>
+                    </svg>
+                </div>
+            </div>
+
+            <h1 class="brand-title">NeXt<span>Lock</span></h1>
+            <p class="subtitle" id="formSubtitle">Secure Master Password Authentication</p>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <input type="password" id="masterPassword" placeholder="Enter Master Password" autocomplete="current-password">
+                    <button type="button" class="toggle-eye" id="toggleMasterPwd" title="Show/Hide Password">
+                        <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group" id="confirmGroup">
+                <div class="input-wrapper">
+                    <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Master Password" autocomplete="new-password">
+                    <button type="button" class="toggle-eye" id="toggleConfirmPwd" title="Show/Hide Password">
+                        <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Password Strength Bar (Visible during registration) -->
+            <div id="strengthContainer" class="strength-container hidden">
+                <div class="strength-bar-bg">
+                    <div id="strengthBar" class="strength-bar"></div>
+                </div>
+                <span id="strengthLabel" class="strength-label">Password Strength: -</span>
+            </div>
+
+            <div id="message" class="message-banner"></div>
+
+            <button id="loginBtn" class="btn-unlock">
+                <span>Unlock Vault</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+
+            <div class="links">
+                <a href="#" id="resetVaultLink">Reset Vault Data</a>
+            </div>
+        </div>
+        
+        <div class="window-footer">
+            <span>AES-256 Encrypted</span> • <span>Zero Knowledge</span>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>

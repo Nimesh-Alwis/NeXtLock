@@ -1,71 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Accounts</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeXtLock - Accounts Vault</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="accounts.css">
 </head>
 <body>
 
-    <button id="backBtn">
-        ← Back
-    </button>
+    <!-- Dynamic Animated Background Orbs -->
+    <div class="bg-glow orb-1"></div>
+    <div class="bg-glow orb-2"></div>
 
-    <h1 id="categoryTitle"></h1>
+    <div class="window">
+        <!-- macOS Window Title Bar -->
+        <div class="title-bar">
+            <div class="window-controls">
+                <div class="control close" id="btnCloseWindow" title="Back to Dashboard"></div>
+                <div class="control minimize" title="Minimize"></div>
+                <div class="control maximize" title="Maximize"></div>
+            </div>
+            <div class="window-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                NeXtLock • <span id="windowCategoryTitle">Category</span>
+            </div>
+            <div class="nav-back-badge" id="backBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Dashboard</span>
+            </div>
+        </div>
 
-    <input
-    type="text"
-    id="searchInput"
-    placeholder="🔍 Search Account"
->
+        <div class="app-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="brand" id="brandBackBtn" style="cursor: pointer;">
+                    <div class="brand-logo">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <span>NeXt<span>Lock</span></span>
+                </div>
+                
+                <div class="nav-section-title">VAULT MANAGEMENT</div>
+                <div class="sidebar-nav">
+                    <div class="nav-item active">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span id="activeCatNav">Accounts</span>
+                    </div>
+                </div>
 
-   <div class="add-account">
+                <div class="backup-tools">
+                    <div class="nav-section-title">BACKUP & RESTORE</div>
+                    <button class="btn-tool" id="exportBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Export Backup</span>
+                    </button>
+                    <button class="btn-tool" id="importBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span>Import Backup</span>
+                    </button>
+                    <input type="file" id="importFile" accept=".json" hidden>
+                </div>
 
-    <input
-        type="text"
-        id="usernameInput"
-        placeholder="Username"
-    >
+                <div class="sidebar-footer">
+                    <button class="btn-lock-sidebar" id="backToDashBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        Back to Categories
+                    </button>
+                </div>
+            </aside>
 
-    <input
-        type="password"
-        id="passwordInput"
-        placeholder="Password"
-    >
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <header class="top-bar">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="searchInput" class="search-bar" placeholder="Search accounts in category...">
+                    </div>
+                    <div class="top-actions">
+                        <button class="btn-primary" id="openAddAccountModalBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>+ Add Account</span>
+                        </button>
+                    </div>
+                </header>
 
-    <p id="strengthText">
-    Strength: -
-</p>
+                <div class="content-header">
+                    <div>
+                        <h1 class="page-title" id="categoryTitle">Category Accounts</h1>
+                        <p class="page-subtitle">Manage stored credentials, copy passwords, and generate new keys</p>
+                    </div>
+                </div>
 
-    <button id="togglePasswordBtn">
-    Show Password
-</button>
+                <!-- Account Items List -->
+                <div id="accountList" class="accounts-grid">
+                    <!-- Accounts rendered dynamically by accounts.js -->
+                </div>
+            </main>
+        </div>
+    </div>
 
-    <button id="generateBtn">
-    Generate Strong Password
-</button>
+    <!-- Modal for Adding Account -->
+    <div id="addAccountModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Credentials</h3>
+                <button class="modal-close" id="closeAddAccountModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-field">
+                    <label>Account / Service Name</label>
+                    <input type="text" id="serviceInput" placeholder="e.g. Google, Netflix, Bank of America">
+                </div>
 
-    <button id="addAccountBtn">
-        Add Account
-    </button>
+                <div class="form-field">
+                    <label>Username / Email</label>
+                    <input type="text" id="usernameInput" placeholder="user@example.com">
+                </div>
 
-<button id="exportBtn">
-    Export Backup
-</button>
+                <div class="form-field">
+                    <label>Password</label>
+                    <div class="input-with-action">
+                        <input type="password" id="passwordInput" placeholder="Enter or generate password">
+                        <button type="button" class="btn-toggle-eye" id="togglePasswordBtn" title="Show/Hide">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
 
-<button id="importBtn">
-    Import Backup
-</button>
+                <!-- Live Strength Meter -->
+                <div class="strength-meter-wrap">
+                    <div class="strength-bar-bg">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                    <span id="strengthText" class="strength-text">Strength: -</span>
+                </div>
 
-<input
-    type="file"
-    id="importFile"
-    accept=".json"
-    hidden
->
+                <!-- Password Generator Drawer -->
+                <div class="generator-box">
+                    <div class="gen-header">
+                        <span>Password Generator</span>
+                        <button type="button" class="btn-gen" id="generateBtn">
+                            ⚡ Generate Strong
+                        </button>
+                    </div>
+                    <div class="gen-options">
+                        <div class="slider-row">
+                            <label>Length: <span id="lengthVal">16</span></label>
+                            <input type="range" id="lengthSlider" min="8" max="32" value="16">
+                        </div>
+                        <div class="checkbox-row">
+                            <label><input type="checkbox" id="chkSymbols" checked> Symbols (!@#$)</label>
+                            <label><input type="checkbox" id="chkNumbers" checked> Numbers (0-9)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelAddAccountModalBtn">Cancel</button>
+                <button class="btn-primary" id="addAccountBtn">Save Account</button>
+            </div>
+        </div>
+    </div>
 
-</div>
-
-<div id="accountList"></div>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <script src="accounts.js"></script>
 
