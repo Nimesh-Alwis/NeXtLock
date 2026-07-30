@@ -252,6 +252,35 @@
         </div>
     </div>
 
+    <!-- Modal for Double-Lock Hidden Vault Verification -->
+    <div id="hiddenVaultModal" class="modal-overlay hidden">
+        <div class="modal-content export-modal-content">
+            <div class="modal-header">
+                <h3>🕵️ Unlock Hidden Vault</h3>
+                <button class="modal-close" id="closeHiddenVaultModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="export-subtitle">This is a Double-Locked Special Vault. Re-enter your Master Password to proceed.</p>
+
+                <div class="form-field">
+                    <label>Master Password</label>
+                    <div class="input-with-action">
+                        <input type="password" id="hiddenVaultPassword" placeholder="Enter Master Password">
+                        <button type="button" class="btn-toggle-eye" id="toggleHiddenVaultPwd" title="Show/Hide">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="hiddenVaultErrorMsg" class="export-error-msg"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelHiddenVaultModalBtn">Cancel</button>
+                <button class="btn-primary" id="confirmHiddenVaultBtn">Unlock Hidden Vault</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container"></div>
 

@@ -203,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const service = serviceInput.value.trim();
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
+        const notes = notesInput ? notesInput.value.trim() : "";
 
         if (!service || !username || !password) {
             showToast("Please fill in all fields", "error");
@@ -214,6 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
             service,
             username,
             password,
+            notes: notes,
+            customAvatar: selectedAccIconValue,
             created: new Date().toLocaleDateString()
         };
 
@@ -232,7 +235,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // SVG Brand Logo Renderer
-    function getBrandIcon(serviceName) {
+    function getBrandIcon(serviceName, customAvatar) {
+        if (customAvatar && customAvatar !== "auto") {
+            const isImg = customAvatar.startsWith("data:image") || customAvatar.startsWith("http");
+            if (isImg) {
+                return `<div class="brand-badge" style="background:transparent;"><img src="${customAvatar}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;" alt="Avatar"></div>`;
+            } else {
+                return `<div class="brand-badge brand-default" style="font-size:18px;">${customAvatar}</div>`;
+            }
+        }
+
         const s = serviceName.toLowerCase();
         
         // Instagram
@@ -266,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // TikTok
         if (s.includes("tiktok")) {
             return `<div class="brand-badge brand-tiktok" title="TikTok">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.82.54-1.31 1.48-1.34 2.47-.04.99.37 1.97 1.12 2.6.76.64 1.8.92 2.78.75 1.01-.15 1.93-.84 2.36-1.76.32-.67.45-1.43.43-2.17.03-4.99.01-9.98.02-14.97z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68a6.34 6.34 0 0 0 10.86 4.46A6.29 6.29 0 0 0 15.82 15V8.84a8.35 8.35 0 0 0 4.77 1.48V6.87a4.79 4.79 0 0 1-1-.18z"/></svg>
             </div>`;
         }
 
@@ -373,7 +385,14 @@ document.addEventListener("DOMContentLoaded", function () {
     function createAccountCardElement(acc) {
         const card = document.createElement("div");
         card.className = "account-card";
-        const iconHtml = getBrandIcon(acc.service);
+        const iconHtml = getBrandIcon(acc.service, acc.customAvatar);
+
+        const notesHtml = acc.notes ? `
+            <div class="account-notes-box">
+                <div class="notes-text">📝 ${acc.notes}</div>
+                <button class="copy-notes-btn" title="Copy Notes">Copy</button>
+            </div>
+        ` : "";
 
         card.innerHTML = `
             <div class="account-info">
@@ -406,7 +425,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
             </div>
+            ${notesHtml}
         `;
+
+        // Copy Notes Handler
+        const copyNotesBtn = card.querySelector(".copy-notes-btn");
+        if (copyNotesBtn) {
+            copyNotesBtn.addEventListener("click", function () {
+                copyToClipboard(acc.notes).then(() => {
+                    showToast("Notes copied to clipboard!");
+                });
+            });
+        }
 
         // Mask/Unmask Handler
         const passSpan = card.querySelector(".masked-pass");
