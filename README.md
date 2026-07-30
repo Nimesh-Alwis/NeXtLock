@@ -98,8 +98,7 @@ NeXtLock/
 ### Option 1 — npx serve (Recommended)
 ```bash
 npx serve src
-```
-Then open `http://localhost:3000/login/login.html`
+
 
 ### Option 2 — Python
 ```bash
