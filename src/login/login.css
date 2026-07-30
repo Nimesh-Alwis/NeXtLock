@@ -315,3 +315,174 @@ body {
     color: var(--text-muted);
     letter-spacing: 0.5px;
 }
+
+/* Multi-Profile Styles */
+.view-section {
+    width: 100%;
+}
+
+.view-section.hidden {
+    display: none !important;
+}
+
+.profiles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+    margin-top: 14px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.profile-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.profile-card:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+}
+
+.profile-card .prof-avatar {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.profile-card .prof-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    word-break: break-word;
+}
+
+.profile-card .prof-delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.profile-card:hover .prof-delete-btn {
+    opacity: 1;
+}
+
+.profile-card .prof-delete-btn:hover {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.profile-card.create-card {
+    border: 1px dashed rgba(59, 130, 246, 0.4);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.profile-card.create-card:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: var(--accent-blue);
+}
+
+/* Avatar Selector Pills */
+.avatar-selector {
+    width: 100%;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.avatar-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.avatar-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.avatar-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 18px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.avatar-pill:hover, .avatar-pill.active {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+/* Button Group Row */
+.btn-group-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 14px;
+}
+
+.btn-secondary {
+    padding: 13px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Selected Profile Badge in Unlock View */
+.selected-profile-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.selected-profile-badge .sel-avatar {
+    font-size: 22px;
+}
+
+.selected-profile-badge .sel-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+}

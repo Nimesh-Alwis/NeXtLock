@@ -1,9 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const activeProfileId = localStorage.getItem("activeProfileId");
+
     // Auth Check
-    if (!localStorage.getItem("masterPassword")) {
+    if (!localStorage.getItem("masterPassword") || !activeProfileId) {
         window.location.href = "../../login/login.html";
         return;
     }
+
+    const catKey = "categories_" + activeProfileId;
+    const accKey = "accounts_" + activeProfileId;
 
     const currentCategory = localStorage.getItem("selectedCategory");
     if (!currentCategory) {
@@ -11,12 +16,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    const profiles = JSON.parse(localStorage.getItem("profiles") || "[]");
+    const activeProfile = profiles.find(p => p.id === activeProfileId) || { name: "My Vault", avatar: "👤" };
+
     // Title Updates
-    document.getElementById("categoryTitle").textContent = currentCategory;
-    document.getElementById("windowCategoryTitle").textContent = currentCategory;
+    document.getElementById("categoryTitle").textContent = `${activeProfile.avatar || "👤"} ${currentCategory}`;
+    document.getElementById("windowCategoryTitle").textContent = `${activeProfile.name} • ${currentCategory}`;
     document.getElementById("activeCatNav").textContent = currentCategory;
 
-    let accountsData = JSON.parse(localStorage.getItem("accounts") || "{}");
+    let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
     let categoryAccounts = accountsData[currentCategory] || [];
 
     // Navigation Back
@@ -211,9 +219,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         categoryAccounts.push(newAccount);
         accountsData[currentCategory] = categoryAccounts;
-        localStorage.setItem("accounts", JSON.stringify(accountsData));
+        localStorage.setItem(accKey, JSON.stringify(accountsData));
 
-        renderAccounts();
+        renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
         closeModal();
         showToast(`Account "${service}" saved!`);
     });
@@ -440,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (idx > -1) {
                     categoryAccounts.splice(idx, 1);
                     accountsData[currentCategory] = categoryAccounts;
-                    localStorage.setItem("accounts", JSON.stringify(accountsData));
+                    localStorage.setItem(accKey, JSON.stringify(accountsData));
                     renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
                     showToast(`Deleted ${acc.service} (${acc.username})`);
                 }
@@ -552,9 +560,10 @@ document.addEventListener("DOMContentLoaded", function () {
     exportBtn.addEventListener("click", function () {
         const backupData = {
             version: "1.0",
+            profileId: activeProfileId,
             timestamp: new Date().toISOString(),
-            categories: JSON.parse(localStorage.getItem("categories") || "[]"),
-            accounts: JSON.parse(localStorage.getItem("accounts") || "{}")
+            categories: JSON.parse(localStorage.getItem(catKey) || "[]"),
+            accounts: JSON.parse(localStorage.getItem(accKey) || "{}")
         };
 
         const jsonStr = JSON.stringify(backupData, null, 2);
@@ -585,13 +594,13 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
                 const imported = JSON.parse(event.target.result);
                 if (imported.categories && imported.accounts) {
-                    localStorage.setItem("categories", JSON.stringify(imported.categories));
-                    localStorage.setItem("accounts", JSON.stringify(imported.accounts));
+                    localStorage.setItem(catKey, JSON.stringify(imported.categories));
+                    localStorage.setItem(accKey, JSON.stringify(imported.accounts));
                     
                     accountsData = imported.accounts;
                     categoryAccounts = accountsData[currentCategory] || [];
                     
-                    renderAccounts();
+                    renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
                     showToast("Vault restored from backup successfully!");
                 } else {
                     showToast("Invalid backup file format", "error");

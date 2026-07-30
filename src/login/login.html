@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeXtLock - Vault Login</title>
+    <title>NeXtLock - Select Profile & Login</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
             </div>
             <div class="window-title">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                NeXtLock Vault Security
+                NeXtLock Multi-Vault Security
             </div>
         </div>
 
@@ -43,50 +43,115 @@
             </div>
 
             <h1 class="brand-title">NeXt<span>Lock</span></h1>
-            <p class="subtitle" id="formSubtitle">Secure Master Password Authentication</p>
 
-            <div class="form-group">
-                <div class="input-wrapper">
-                    <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    <input type="password" id="masterPassword" placeholder="Enter Master Password" autocomplete="current-password">
-                    <button type="button" class="toggle-eye" id="toggleMasterPwd" title="Show/Hide Password">
-                        <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="form-group" id="confirmGroup">
-                <div class="input-wrapper">
-                    <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <input type="password" id="confirmPassword" placeholder="Confirm Master Password" autocomplete="new-password">
-                    <button type="button" class="toggle-eye" id="toggleConfirmPwd" title="Show/Hide Password">
-                        <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Password Strength Bar (Visible during registration) -->
-            <div id="strengthContainer" class="strength-container hidden">
-                <div class="strength-bar-bg">
-                    <div id="strengthBar" class="strength-bar"></div>
-                </div>
-                <span id="strengthLabel" class="strength-label">Password Strength: -</span>
-            </div>
-
+            <!-- Message Banner -->
             <div id="message" class="message-banner"></div>
 
-            <button id="loginBtn" class="btn-unlock">
-                <span>Unlock Vault</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
+            <!-- VIEW 1: Profiles List Grid -->
+            <div id="profilesView" class="view-section">
+                <p class="subtitle">Select User Profile or Create New Vault</p>
+                <div id="profilesGrid" class="profiles-grid">
+                    <!-- Profile Cards Rendered by login.js -->
+                </div>
+            </div>
+
+            <!-- VIEW 2: Create New Profile Form -->
+            <div id="createProfileView" class="view-section hidden">
+                <p class="subtitle">Create New User Profile</p>
+                
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="profileNameInput" placeholder="Profile / User Name (e.g. Nimesh, Work)">
+                    </div>
+                </div>
+
+                <!-- Avatar Selection Pills -->
+                <div class="avatar-selector">
+                    <label class="avatar-label">Choose Avatar:</label>
+                    <div class="avatar-pills" id="avatarPills">
+                        <button type="button" class="avatar-pill active" data-avatar="👤">👤</button>
+                        <button type="button" class="avatar-pill" data-avatar="💼">💼</button>
+                        <button type="button" class="avatar-pill" data-avatar="🔒">🔒</button>
+                        <button type="button" class="avatar-pill" data-avatar="👑">👑</button>
+                        <button type="button" class="avatar-pill" data-avatar="🚀">🚀</button>
+                        <button type="button" class="avatar-pill" data-avatar="💻">💻</button>
+                        <button type="button" class="avatar-pill" data-avatar="🎮">🎮</button>
+                        <button type="button" class="avatar-pill" data-avatar="🏦">🏦</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" id="createMasterPassword" placeholder="Set Profile Master Password" autocomplete="new-password">
+                        <button type="button" class="toggle-eye" id="toggleCreatePwd">
+                            <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <input type="password" id="confirmMasterPassword" placeholder="Confirm Master Password" autocomplete="new-password">
+                        <button type="button" class="toggle-eye" id="toggleConfirmPwd">
+                            <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Password Strength Meter -->
+                <div id="strengthContainer" class="strength-container">
+                    <div class="strength-bar-bg">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                    <span id="strengthLabel" class="strength-label">Password Strength: -</span>
+                </div>
+
+                <div class="btn-group-row">
+                    <button type="button" class="btn-secondary" id="cancelCreateProfileBtn">Back</button>
+                    <button type="button" class="btn-unlock" id="submitCreateProfileBtn">
+                        <span>Create Profile</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 3: Unlock Selected Profile -->
+            <div id="unlockProfileView" class="view-section hidden">
+                <div class="selected-profile-badge">
+                    <span id="selectedAvatar" class="sel-avatar">👤</span>
+                    <h3 id="selectedName" class="sel-name">User Profile</h3>
+                </div>
+                <p class="subtitle">Enter password to unlock vault</p>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" id="unlockMasterPassword" placeholder="Enter Master Password" autocomplete="current-password">
+                        <button type="button" class="toggle-eye" id="toggleUnlockPwd">
+                            <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="btn-group-row">
+                    <button type="button" class="btn-secondary" id="backToProfilesBtn">Switch Profile</button>
+                    <button type="button" class="btn-unlock" id="unlockProfileBtn">
+                        <span>Unlock Vault</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </div>
+            </div>
 
             <div class="links">
-                <a href="#" id="resetVaultLink">Reset Vault Data</a>
+                <a href="#" id="resetVaultLink">Reset All Profiles Data</a>
             </div>
         </div>
         
         <div class="window-footer">
-            <span>AES-256 Encrypted</span> • <span>Zero Knowledge</span>
+            <span>Multi-User Encrypted</span> • <span>Zero Knowledge</span>
         </div>
     </div>
 

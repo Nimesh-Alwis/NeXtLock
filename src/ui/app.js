@@ -1,30 +1,50 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const activeProfileId = localStorage.getItem("activeProfileId");
+
     // Redirect to login if not authenticated
-    if (!localStorage.getItem("masterPassword")) {
+    if (!localStorage.getItem("masterPassword") || !activeProfileId) {
         window.location.href = "../login/login.html";
         return;
     }
 
-    let categories = JSON.parse(localStorage.getItem("categories") || "[]");
-    let accountsData = JSON.parse(localStorage.getItem("accounts") || "{}");
-    let iconMap = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+    // Get Active Profile Object
+    const profiles = JSON.parse(localStorage.getItem("profiles") || "[]");
+    const activeProfile = profiles.find(p => p.id === activeProfileId) || { name: "My Vault", avatar: "👤" };
 
-    // Initialize default categories and pre-populated popular accounts if brand new
+    // Update Profile Badge in Header
+    const userBadge = document.getElementById("lockVaultBtn");
+    if (userBadge) {
+        userBadge.innerHTML = `
+            <span>${activeProfile.avatar || "👤"}</span>
+            <span>${activeProfile.name}</span>
+            <span style="opacity: 0.6; margin-left: 4px;">• Lock</span>
+        `;
+    }
+
+    // Isolated Keys per Profile
+    const catKey = `categories_${activeProfileId}`;
+    const accKey = `accounts_${activeProfileId}`;
+    const iconKey = `categoryIcons_${activeProfileId}`;
+
+    let categories = JSON.parse(localStorage.getItem(catKey) || "[]");
+    let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
+    let iconMap = JSON.parse(localStorage.getItem(iconKey) || "{}");
+
+    // Initialize default categories and pre-populated popular accounts if brand new for this profile
     if (categories.length === 0) {
         categories = ["Social Media", "Work & Professional", "Streaming & Entertainment", "Banking & Finance"];
-        localStorage.setItem("categories", JSON.stringify(categories));
+        localStorage.setItem(catKey, JSON.stringify(categories));
 
-        // Default Icon mappings
         iconMap = {
             "Social Media": "💬",
             "Work & Professional": "💼",
             "Streaming & Entertainment": "📺",
             "Banking & Finance": "🏦"
         };
-        localStorage.setItem("categoryIcons", JSON.stringify(iconMap));
+        localStorage.setItem(iconKey, JSON.stringify(iconMap));
     }
 
-    // Pre-populate main social media and popular accounts if empty or not fully populated
+    // Pre-populate default accounts if empty
     if (!accountsData["Social Media"] || accountsData["Social Media"].length < 6) {
         accountsData["Social Media"] = [
             { id: "sm-1", service: "Instagram", username: "@insta_official", password: "InstaSecurePass!99", created: new Date().toLocaleDateString() },
@@ -65,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
     }
 
-    localStorage.setItem("accounts", JSON.stringify(accountsData));
+    localStorage.setItem(accKey, JSON.stringify(accountsData));
 
     const categoryList = document.getElementById("categoryList");
     const searchCategoryInput = document.getElementById("searchCategoryInput");
@@ -85,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     let selectedIcon = "💬";
 
-    // Lock Vault Handlers
+    // Lock Vault / Switch Profile Handlers
     const lockButtons = [
         document.getElementById("lockVaultBtn"),
         document.getElementById("lockVaultSidebarBtn"),
@@ -95,6 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
     lockButtons.forEach(btn => {
         if (btn) {
             btn.addEventListener("click", function () {
+                localStorage.removeItem("activeProfileId");
                 showToast("Vault Locked");
                 setTimeout(() => {
                     window.location.href = "../login/login.html";
@@ -166,12 +187,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         categories.push(name);
-        localStorage.setItem("categories", JSON.stringify(categories));
+        localStorage.setItem(catKey, JSON.stringify(categories));
         
         // Save category icon mapping
-        const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+        const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
         icons[name] = selectedIcon;
-        localStorage.setItem("categoryIcons", JSON.stringify(icons));
+        localStorage.setItem(iconKey, JSON.stringify(icons));
 
         renderCategories();
         closeModal();
@@ -184,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function getCategoryIcon(catName) {
-        const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+        const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
         if (icons[catName]) return icons[catName];
         
         const lower = catName.toLowerCase();
@@ -264,18 +285,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (accountsData[category]) {
                         accountsData[trimmed] = accountsData[category];
                         delete accountsData[category];
-                        localStorage.setItem("accounts", JSON.stringify(accountsData));
+                        localStorage.setItem(accKey, JSON.stringify(accountsData));
                     }
 
                     // Migrate icon
-                    const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+                    const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
                     if (icons[category]) {
                         icons[trimmed] = icons[category];
                         delete icons[category];
-                        localStorage.setItem("categoryIcons", JSON.stringify(icons));
+                        localStorage.setItem(iconKey, JSON.stringify(icons));
                     }
 
-                    localStorage.setItem("categories", JSON.stringify(categories));
+                    localStorage.setItem(catKey, JSON.stringify(categories));
                     renderCategories();
                     showToast("Category renamed!");
                 }
@@ -290,14 +311,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     categories.splice(idx, 1);
                     delete accountsData[category];
 
-                    const icons = JSON.parse(localStorage.getItem("categoryIcons") || "{}");
+                    const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
                     if (icons[category]) {
                         delete icons[category];
-                        localStorage.setItem("categoryIcons", JSON.stringify(icons));
+                        localStorage.setItem(iconKey, JSON.stringify(icons));
                     }
 
-                    localStorage.setItem("categories", JSON.stringify(categories));
-                    localStorage.setItem("accounts", JSON.stringify(accountsData));
+                    localStorage.setItem(catKey, JSON.stringify(categories));
+                    localStorage.setItem(accKey, JSON.stringify(accountsData));
                     renderCategories();
                     showToast(`Category "${category}" deleted`);
                 }

@@ -1,48 +1,105 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const passwordInput = document.getElementById("masterPassword");
-    const confirmInput = document.getElementById("confirmPassword");
-    const confirmGroup = document.getElementById("confirmGroup");
-    const loginButton = document.getElementById("loginBtn");
+document.addEventListener("DOMContentLoaded", function () {
+    // DOM Elements
+    const profilesView = document.getElementById("profilesView");
+    const createProfileView = document.getElementById("createProfileView");
+    const unlockProfileView = document.getElementById("unlockProfileView");
+    const profilesGrid = document.getElementById("profilesGrid");
     const message = document.getElementById("message");
-    const formSubtitle = document.getElementById("formSubtitle");
-    const resetVaultLink = document.getElementById("resetVaultLink");
-    const strengthContainer = document.getElementById("strengthContainer");
+
+    // Create Profile Elements
+    const profileNameInput = document.getElementById("profileNameInput");
+    const avatarPills = document.getElementById("avatarPills");
+    const createMasterPassword = document.getElementById("createMasterPassword");
+    const confirmMasterPassword = document.getElementById("confirmMasterPassword");
+    const toggleCreatePwd = document.getElementById("toggleCreatePwd");
+    const toggleConfirmPwd = document.getElementById("toggleConfirmPwd");
     const strengthBar = document.getElementById("strengthBar");
     const strengthLabel = document.getElementById("strengthLabel");
+    const submitCreateProfileBtn = document.getElementById("submitCreateProfileBtn");
+    const cancelCreateProfileBtn = document.getElementById("cancelCreateProfileBtn");
 
-    const toggleMasterPwd = document.getElementById("toggleMasterPwd");
-    const toggleConfirmPwd = document.getElementById("toggleConfirmPwd");
+    // Unlock Profile Elements
+    const selectedAvatar = document.getElementById("selectedAvatar");
+    const selectedName = document.getElementById("selectedName");
+    const unlockMasterPassword = document.getElementById("unlockMasterPassword");
+    const toggleUnlockPwd = document.getElementById("toggleUnlockPwd");
+    const unlockProfileBtn = document.getElementById("unlockProfileBtn");
+    const backToProfilesBtn = document.getElementById("backToProfilesBtn");
+    const resetVaultLink = document.getElementById("resetVaultLink");
 
-    const savedPassword = localStorage.getItem("masterPassword");
+    let selectedAvatarValue = "👤";
+    let activeSelectedProfile = null;
 
-    if (savedPassword) {
-        confirmGroup.style.display = "none";
-        strengthContainer.classList.add("hidden");
-        formSubtitle.textContent = "Enter your Master Password to unlock";
-        loginButton.querySelector("span").textContent = "Unlock Vault";
-    } else {
-        confirmGroup.style.display = "block";
-        strengthContainer.classList.remove("hidden");
-        formSubtitle.textContent = "Create a Master Password to protect your secrets";
-        loginButton.querySelector("span").textContent = "Create Master Vault";
+    // Load & Migrate Profiles Data
+    function getProfiles() {
+        let profiles = JSON.parse(localStorage.getItem("profiles") || "[]");
+
+        // Migration for legacy single-user vaults
+        const legacyPwd = localStorage.getItem("masterPassword");
+        if (legacyPwd && profiles.length === 0) {
+            const legacyProfile = {
+                id: "prof_default",
+                name: "My Vault",
+                avatar: "🔒",
+                password: legacyPwd,
+                created: new Date().toLocaleDateString()
+            };
+            profiles.push(legacyProfile);
+
+            // Copy legacy categories and accounts to profile specific keys
+            const legacyCats = localStorage.getItem("categories");
+            const legacyAccs = localStorage.getItem("accounts");
+            const legacyIcons = localStorage.getItem("categoryIcons");
+
+            if (legacyCats) localStorage.setItem("categories_prof_default", legacyCats);
+            if (legacyAccs) localStorage.setItem("accounts_prof_default", legacyAccs);
+            if (legacyIcons) localStorage.setItem("categoryIcons_prof_default", legacyIcons);
+
+            localStorage.setItem("profiles", JSON.stringify(profiles));
+        }
+
+        return profiles;
     }
 
-    // Toggle password visibility
+    function showMessage(msg, type = "error") {
+        message.textContent = msg;
+        message.style.color = type === "success" ? "#10b981" : "#ef4444";
+    }
+
+    function clearMessage() {
+        message.textContent = "";
+    }
+
+    // Toggle Eye Handlers
     function setupPasswordToggle(button, input) {
-        button.addEventListener("click", function() {
+        if (!button || !input) return;
+        button.addEventListener("click", function () {
             const isPassword = input.type === "password";
             input.type = isPassword ? "text" : "password";
             button.style.color = isPassword ? "#60a5fa" : "#9ca3af";
         });
     }
 
-    setupPasswordToggle(toggleMasterPwd, passwordInput);
-    setupPasswordToggle(toggleConfirmPwd, confirmInput);
+    setupPasswordToggle(toggleCreatePwd, createMasterPassword);
+    setupPasswordToggle(toggleConfirmPwd, confirmMasterPassword);
+    setupPasswordToggle(toggleUnlockPwd, unlockMasterPassword);
 
-    // Password strength evaluator
-    if (!savedPassword) {
-        passwordInput.addEventListener("input", function() {
-            const val = passwordInput.value;
+    // Avatar Selection
+    if (avatarPills) {
+        avatarPills.addEventListener("click", function (e) {
+            const pill = e.target.closest(".avatar-pill");
+            if (pill) {
+                document.querySelectorAll(".avatar-pill").forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                selectedAvatarValue = pill.getAttribute("data-avatar") || "👤";
+            }
+        });
+    }
+
+    // Strength Evaluator
+    if (createMasterPassword) {
+        createMasterPassword.addEventListener("input", function () {
+            const val = this.value;
             let score = 0;
             if (val.length >= 6) score += 25;
             if (val.length >= 10) score += 25;
@@ -50,7 +107,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (/[^A-Za-z0-9]/.test(val)) score += 25;
 
             strengthBar.style.width = score + "%";
-
             if (score <= 25) {
                 strengthBar.style.backgroundColor = "#ef4444";
                 strengthLabel.textContent = "Strength: Weak";
@@ -71,68 +127,214 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    loginButton.addEventListener("click", handleAuth);
-    passwordInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") handleAuth();
+    // Render Profiles Screen
+    function renderProfilesView() {
+        clearMessage();
+        profilesView.classList.remove("hidden");
+        createProfileView.classList.add("hidden");
+        unlockProfileView.classList.add("hidden");
+
+        const profiles = getProfiles();
+        profilesGrid.innerHTML = "";
+
+        // If no profiles exist, directly show Create Profile screen
+        if (profiles.length === 0) {
+            showCreateProfileView();
+            return;
+        }
+
+        profiles.forEach(prof => {
+            const card = document.createElement("div");
+            card.className = "profile-card";
+            card.innerHTML = `
+                <button class="prof-delete-btn" title="Delete Profile">&times;</button>
+                <div class="prof-avatar">${prof.avatar || "👤"}</div>
+                <div class="prof-name">${prof.name}</div>
+            `;
+
+            // Click to Unlock Profile
+            card.addEventListener("click", function (e) {
+                if (e.target.closest(".prof-delete-btn")) return;
+                showUnlockProfileView(prof);
+            });
+
+            // Delete Profile
+            const deleteBtn = card.querySelector(".prof-delete-btn");
+            deleteBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete profile "${prof.name}" and all its saved passwords?`)) {
+                    deleteProfile(prof.id);
+                }
+            });
+
+            profilesGrid.appendChild(card);
+        });
+
+        // "+ Create New Profile" Card
+        const createCard = document.createElement("div");
+        createCard.className = "profile-card create-card";
+        createCard.innerHTML = `
+            <div class="prof-avatar">➕</div>
+            <div class="prof-name" style="color: #60a5fa;">New Profile</div>
+        `;
+        createCard.addEventListener("click", showCreateProfileView);
+        profilesGrid.appendChild(createCard);
+    }
+
+    function showCreateProfileView() {
+        clearMessage();
+        profilesView.classList.add("hidden");
+        createProfileView.classList.remove("hidden");
+        unlockProfileView.classList.add("hidden");
+
+        profileNameInput.value = "";
+        createMasterPassword.value = "";
+        confirmMasterPassword.value = "";
+        strengthBar.style.width = "0%";
+        strengthLabel.textContent = "Password Strength: -";
+        profileNameInput.focus();
+    }
+
+    function showUnlockProfileView(prof) {
+        clearMessage();
+        activeSelectedProfile = prof;
+        profilesView.classList.add("hidden");
+        createProfileView.classList.add("hidden");
+        unlockProfileView.classList.remove("hidden");
+
+        selectedAvatar.textContent = prof.avatar || "👤";
+        selectedName.textContent = prof.name;
+        unlockMasterPassword.value = "";
+        unlockMasterPassword.focus();
+    }
+
+    function deleteProfile(profId) {
+        let profiles = getProfiles();
+        profiles = profiles.filter(p => p.id !== profId);
+        localStorage.setItem("profiles", JSON.stringify(profiles));
+
+        // Clear profile vault data
+        localStorage.removeItem(`categories_${profId}`);
+        localStorage.removeItem(`accounts_${profId}`);
+        localStorage.removeItem(`categoryIcons_${profId}`);
+
+        if (localStorage.getItem("activeProfileId") === profId) {
+            localStorage.removeItem("activeProfileId");
+        }
+
+        renderProfilesView();
+        showMessage("Profile deleted successfully.", "success");
+    }
+
+    // Handlers for Creation
+    if (submitCreateProfileBtn) {
+        submitCreateProfileBtn.addEventListener("click", handleCreateProfile);
+    }
+    if (cancelCreateProfileBtn) {
+        cancelCreateProfileBtn.addEventListener("click", renderProfilesView);
+    }
+
+    [profileNameInput, createMasterPassword, confirmMasterPassword].forEach(inp => {
+        if (inp) {
+            inp.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") handleCreateProfile();
+            });
+        }
     });
-    confirmInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") handleAuth();
-    });
 
-    function handleAuth() {
-        const password = passwordInput.value.trim();
+    function handleCreateProfile() {
+        const name = profileNameInput.value.trim();
+        const pwd = createMasterPassword.value.trim();
+        const confirmPwd = confirmMasterPassword.value.trim();
 
-        if (!savedPassword) {
-            const confirm = confirmInput.value.trim();
+        if (!name || !pwd || !confirmPwd) {
+            showMessage("Please fill in all fields.");
+            return;
+        }
 
-            if (password === "" || confirm === "") {
-                message.textContent = "Please fill in all fields.";
-                message.style.color = "#ef4444";
-                return;
-            }
+        if (pwd !== confirmPwd) {
+            showMessage("Passwords do not match.");
+            return;
+        }
 
-            if (password !== confirm) {
-                message.textContent = "Passwords do not match.";
-                message.style.color = "#ef4444";
-                return;
-            }
+        if (pwd.length < 4) {
+            showMessage("Password must be at least 4 characters.");
+            return;
+        }
 
-            if (password.length < 4) {
-                message.textContent = "Password must be at least 4 characters.";
-                message.style.color = "#ef4444";
-                return;
-            }
+        const profiles = getProfiles();
 
-            localStorage.setItem("masterPassword", password);
-            message.style.color = "#10b981";
-            message.textContent = "Vault created! Unlocking...";
+        // Check duplicate profile name
+        if (profiles.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+            showMessage(`A profile named "${name}" already exists.`);
+            return;
+        }
+
+        const newProfile = {
+            id: `prof_${Date.now()}`,
+            name: name,
+            avatar: selectedAvatarValue,
+            password: pwd,
+            created: new Date().toLocaleDateString()
+        };
+
+        profiles.push(newProfile);
+        localStorage.setItem("profiles", JSON.stringify(profiles));
+
+        // Automatically set active profile session
+        localStorage.setItem("activeProfileId", newProfile.id);
+        localStorage.setItem("masterPassword", newProfile.password); // for legacy checks
+
+        showMessage(`Profile "${name}" created! Opening vault...`, "success");
+        setTimeout(() => {
+            window.location.href = "../ui/index.html";
+        }, 600);
+    }
+
+    // Handlers for Unlock
+    if (unlockProfileBtn) {
+        unlockProfileBtn.addEventListener("click", handleUnlockProfile);
+    }
+    if (backToProfilesBtn) {
+        backToProfilesBtn.addEventListener("click", renderProfilesView);
+    }
+    if (unlockMasterPassword) {
+        unlockMasterPassword.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") handleUnlockProfile();
+        });
+    }
+
+    function handleUnlockProfile() {
+        if (!activeSelectedProfile) return;
+
+        const pwd = unlockMasterPassword.value.trim();
+        if (pwd === activeSelectedProfile.password) {
+            localStorage.setItem("activeProfileId", activeSelectedProfile.id);
+            localStorage.setItem("masterPassword", activeSelectedProfile.password); // for legacy checks
+            showMessage("Access Granted! Unlocking vault...", "success");
 
             setTimeout(() => {
                 window.location.href = "../ui/index.html";
-            }, 600);
-
+            }, 400);
         } else {
-            if (password === savedPassword) {
-                message.style.color = "#10b981";
-                message.textContent = "Access Granted. Opening Vault...";
-                setTimeout(() => {
-                    window.location.href = "../ui/index.html";
-                }, 400);
-            } else {
-                message.style.color = "#ef4444";
-                message.textContent = "Incorrect Master Password.";
-                passwordInput.value = "";
-                passwordInput.focus();
-            }
+            showMessage("Incorrect Password for profile.");
+            unlockMasterPassword.value = "";
+            unlockMasterPassword.focus();
         }
     }
 
-    resetVaultLink.addEventListener("click", function(e) {
-        e.preventDefault();
-        if (confirm("Resetting your vault will delete all saved passwords and categories. Are you sure?")) {
-            localStorage.clear();
-            alert("Vault reset successfully.");
-            window.location.reload();
-        }
-    });
+    // Reset All Profiles Data
+    if (resetVaultLink) {
+        resetVaultLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (confirm("WARNING: This will wipe ALL profiles and all saved password vaults! Are you sure?")) {
+                localStorage.clear();
+                alert("All profiles and vault data reset successfully.");
+                window.location.reload();
+            }
+        });
+    }
+
+    // Initialize
+    renderProfilesView();
 });
