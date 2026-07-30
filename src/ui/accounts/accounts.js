@@ -61,6 +61,44 @@ document.addEventListener("DOMContentLoaded", function () {
     const strengthBar = document.getElementById("strengthBar");
     const strengthText = document.getElementById("strengthText");
 
+    // Custom Account Avatar & Notes Elements
+    const accUploadPhotoBtn = document.getElementById("accUploadPhotoBtn");
+    const accPhotoInput = document.getElementById("accPhotoInput");
+    const accAvatarPills = document.getElementById("accAvatarPills");
+    const notesInput = document.getElementById("notesInput");
+
+    let selectedAccIconValue = "auto";
+
+    if (accUploadPhotoBtn && accPhotoInput) {
+        accUploadPhotoBtn.addEventListener("click", () => accPhotoInput.click());
+
+        accPhotoInput.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                selectedAccIconValue = event.target.result;
+                if (accAvatarPills) {
+                    document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
+                }
+                showToast("Custom Photo selected!");
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (accAvatarPills) {
+        accAvatarPills.addEventListener("click", function (e) {
+            const pill = e.target.closest(".acc-avatar-pill");
+            if (pill) {
+                document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                selectedAccIconValue = pill.getAttribute("data-icon") || "auto";
+            }
+        });
+    }
+
     // Password Generator Elements
     const generateBtn = document.getElementById("generateBtn");
     const lengthSlider = document.getElementById("lengthSlider");
@@ -97,6 +135,13 @@ document.addEventListener("DOMContentLoaded", function () {
         serviceInput.value = typeof prefillService === "string" ? prefillService : "";
         usernameInput.value = "";
         passwordInput.value = "";
+        if (notesInput) notesInput.value = "";
+        selectedAccIconValue = "auto";
+        if (accAvatarPills) {
+            document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
+            const autoPill = accAvatarPills.querySelector('[data-icon="auto"]');
+            if (autoPill) autoPill.classList.add("active");
+        }
         evaluateStrength("");
         if (prefillService) {
             usernameInput.focus();
