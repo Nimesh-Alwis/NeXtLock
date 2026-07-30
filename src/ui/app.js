@@ -35,11 +35,28 @@ document.addEventListener("DOMContentLoaded", function () {
     let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
     let iconMap = JSON.parse(localStorage.getItem(iconKey) || "{}");
 
-    // Initialize default categories and pre-populated popular accounts if brand new for this profile
+    // Clean & Deduplicate Category Array
+    function sanitizeCategories(catList) {
+        const result = [];
+        const seen = new Set();
+        catList.forEach(item => {
+            if (typeof item === "string") {
+                const trimmed = item.trim();
+                const lower = trimmed.toLowerCase();
+                if (trimmed && !seen.has(lower)) {
+                    seen.add(lower);
+                    result.push(trimmed);
+                }
+            }
+        });
+        return result;
+    }
+
+    categories = sanitizeCategories(categories);
+
+    // Initialize default categories if empty
     if (categories.length === 0) {
         categories = ["🕵️ Hidden Vault", "Social Media", "Work & Professional", "Streaming & Entertainment", "Banking & Finance"];
-        localStorage.setItem(catKey, JSON.stringify(categories));
-
         iconMap = {
             "🕵️ Hidden Vault": "🕵️",
             "Social Media": "💬",
@@ -50,13 +67,18 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem(iconKey, JSON.stringify(iconMap));
     }
 
-    // Ensure built-in Hidden Vault is always included
-    if (!categories.includes("🕵️ Hidden Vault")) {
+    // Ensure built-in Hidden Vault is always included at top
+    const hvIndex = categories.findIndex(c => c.toLowerCase().includes("hidden vault"));
+    if (hvIndex === -1) {
         categories.unshift("🕵️ Hidden Vault");
-        localStorage.setItem(catKey, JSON.stringify(categories));
-        iconMap["🕵️ Hidden Vault"] = "🕵️";
-        localStorage.setItem(iconKey, JSON.stringify(iconMap));
+    } else if (hvIndex > 0) {
+        const hvItem = categories.splice(hvIndex, 1)[0];
+        categories.unshift(hvItem);
     }
+    iconMap["🕵️ Hidden Vault"] = "🕵️";
+
+    localStorage.setItem(catKey, JSON.stringify(categories));
+    localStorage.setItem(iconKey, JSON.stringify(iconMap));
 
     // Pre-populate default accounts if empty
     if (!accountsData["Social Media"] || accountsData["Social Media"].length < 6) {
@@ -195,8 +217,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (categories.includes(name)) {
-            showToast("Category already exists", "error");
+        const isDuplicate = categories.some(c => c.trim().toLowerCase() === name.toLowerCase());
+        if (isDuplicate) {
+            showToast(`Category "${name}" already exists!`, "error");
             return;
         }
 
@@ -368,8 +391,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     const newName = prompt("Enter new category name:", category);
                     if (newName && newName.trim() !== "" && newName.trim() !== category) {
                         const trimmed = newName.trim();
-                        if (categories.includes(trimmed)) {
-                            showToast("Category name already exists", "error");
+                        const isDup = categories.some(c => c.trim().toLowerCase() === trimmed.toLowerCase() && c.trim().toLowerCase() !== category.toLowerCase());
+                        if (isDup) {
+                            showToast(`Category "${trimmed}" already exists!`, "error");
                             return;
                         }
                         const idx = categories.indexOf(category);
