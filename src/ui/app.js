@@ -35,12 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
     let iconMap = JSON.parse(localStorage.getItem(iconKey) || "{}");
 
-    // Clean & Deduplicate Category Array
+    // Clean & Deduplicate Category Array (100% Fail-Safe)
     function sanitizeCategories(catList) {
         const result = [];
         const seen = new Set();
+        if (!Array.isArray(catList)) return result;
         catList.forEach(item => {
-            if (typeof item === "string") {
+            if (item && typeof item === "string") {
                 const trimmed = item.trim();
                 const lower = trimmed.toLowerCase();
                 if (trimmed && !seen.has(lower)) {
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Ensure built-in Hidden Vault is always included at top
-    const hvIndex = categories.findIndex(c => c.toLowerCase().includes("hidden vault"));
+    const hvIndex = categories.findIndex(c => typeof c === "string" && c.toLowerCase().includes("hidden vault"));
     if (hvIndex === -1) {
         categories.unshift("🕵️ Hidden Vault");
     } else if (hvIndex > 0) {
@@ -217,9 +218,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        const isDuplicate = categories.some(c => c.trim().toLowerCase() === name.toLowerCase());
+        const isDuplicate = categories.some(c => typeof c === "string" && c.trim().toLowerCase() === name.toLowerCase());
         if (isDuplicate) {
             showToast(`Category "${name}" already exists!`, "error");
+            closeModal();
             return;
         }
 
@@ -231,17 +233,20 @@ document.addEventListener("DOMContentLoaded", function () {
         icons[name] = selectedIcon;
         localStorage.setItem(iconKey, JSON.stringify(icons));
 
-        renderCategories();
         closeModal();
+        renderCategories(searchCategoryInput ? searchCategoryInput.value.trim().toLowerCase() : "");
         showToast(`Category "${name}" created with icon ${selectedIcon}`);
     });
 
     // Live Search Filter
-    searchCategoryInput.addEventListener("input", function () {
-        renderCategories(this.value.trim().toLowerCase());
-    });
+    if (searchCategoryInput) {
+        searchCategoryInput.addEventListener("input", function () {
+            renderCategories(this.value.trim().toLowerCase());
+        });
+    }
 
     function getCategoryIcon(catName) {
+        if (!catName || typeof catName !== "string") return "📁";
         const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
         if (icons[catName]) return icons[catName];
         
@@ -319,7 +324,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderCategories(filterQuery = "") {
         categoryList.innerHTML = "";
         
-        const filtered = categories.filter(cat => cat.toLowerCase().includes(filterQuery));
+        const safeQuery = (filterQuery || "").trim().toLowerCase();
+        const filtered = categories.filter(cat => typeof cat === "string" && cat.toLowerCase().includes(safeQuery));
         totalCategoryBadge.textContent = categories.length;
 
         if (filtered.length === 0) {
@@ -421,25 +427,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Delete Handler
             const deleteBtn = card.querySelector(".delete-btn");
-            deleteBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (confirm(`Are you sure you want to delete "${category}" and all its passwords?`)) {
-                    const idx = categories.indexOf(category);
-                    categories.splice(idx, 1);
-                    delete accountsData[category];
+            if (deleteBtn) {
+                deleteBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to delete "${category}" and all its passwords?`)) {
+                        const idx = categories.indexOf(category);
+                        categories.splice(idx, 1);
+                        delete accountsData[category];
 
-                    const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
-                    if (icons[category]) {
-                        delete icons[category];
-                        localStorage.setItem(iconKey, JSON.stringify(icons));
+                        const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
+                        if (icons[category]) {
+                            delete icons[category];
+                            localStorage.setItem(iconKey, JSON.stringify(icons));
+                        }
+
+                        localStorage.setItem(catKey, JSON.stringify(categories));
+                        localStorage.setItem(accKey, JSON.stringify(accountsData));
+                        renderCategories();
+                        showToast(`Category "${category}" deleted`);
                     }
-
-                    localStorage.setItem(catKey, JSON.stringify(categories));
-                    localStorage.setItem(accKey, JSON.stringify(accountsData));
-                    renderCategories();
-                    showToast(`Category "${category}" deleted`);
-                }
-            });
+                });
+            }
 
             categoryList.appendChild(card);
         });
