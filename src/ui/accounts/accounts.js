@@ -63,6 +63,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelAddAccountModalBtn = document.getElementById("cancelAddAccountModalBtn");
     const addAccountBtn = document.getElementById("addAccountBtn");
 
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importFile = document.getElementById("importFile");
+
     const serviceInput = document.getElementById("serviceInput");
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
@@ -182,24 +186,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Enter Key Listeners inside Modal
     [serviceInput, usernameInput, passwordInput].forEach(inp => {
-        inp.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") addAccountBtn.click();
-        });
+        if (inp) {
+            inp.addEventListener("keypress", function (e) {
+                if (e.key === "Enter" && addAccountBtn) addAccountBtn.click();
+            });
+        }
     });
 
     // Toggle Eye inside Modal
-    togglePasswordBtn.addEventListener("click", function () {
-        const isPass = passwordInput.type === "password";
-        passwordInput.type = isPass ? "text" : "password";
-        togglePasswordBtn.style.color = isPass ? "#60a5fa" : "#9ca3af";
-    });
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener("click", function () {
+            const isPass = passwordInput.type === "password";
+            passwordInput.type = isPass ? "text" : "password";
+            togglePasswordBtn.style.color = isPass ? "#60a5fa" : "#9ca3af";
+        });
+    }
 
     // Password Strength Meter Listener
-    passwordInput.addEventListener("input", function () {
-        evaluateStrength(this.value);
-    });
+    if (passwordInput) {
+        passwordInput.addEventListener("input", function () {
+            evaluateStrength(this.value);
+        });
+    }
 
     function evaluateStrength(pwd) {
+        if (!strengthBar || !strengthText) return;
         let score = 0;
         if (pwd.length >= 6) score += 25;
         if (pwd.length >= 12) score += 25;
@@ -227,71 +238,90 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Password Generator
-    lengthSlider.addEventListener("input", function () {
-        lengthVal.textContent = this.value;
-    });
+    if (lengthSlider && lengthVal) {
+        lengthSlider.addEventListener("input", function () {
+            lengthVal.textContent = this.value;
+        });
+    }
 
-    generateBtn.addEventListener("click", function () {
-        const length = parseInt(lengthSlider.value);
-        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const nums = "0123456789";
-        const syms = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    if (generateBtn && passwordInput && lengthSlider && chkNumbers && chkSymbols) {
+        generateBtn.addEventListener("click", function () {
+            const length = parseInt(lengthSlider.value);
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const nums = "0123456789";
+            const syms = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-        let validPool = chars;
-        if (chkNumbers.checked) validPool += nums;
-        if (chkSymbols.checked) validPool += syms;
+            let validPool = chars;
+            if (chkNumbers.checked) validPool += nums;
+            if (chkSymbols.checked) validPool += syms;
 
-        let result = "";
-        for (let i = 0; i < length; i++) {
-            result += validPool.charAt(Math.floor(Math.random() * validPool.length));
-        }
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += validPool.charAt(Math.floor(Math.random() * validPool.length));
+            }
 
-        passwordInput.value = result;
-        passwordInput.type = "text";
-        togglePasswordBtn.style.color = "#60a5fa";
-        evaluateStrength(result);
-        showToast("Strong Password Generated!");
-    });
+            passwordInput.value = result;
+            passwordInput.type = "text";
+            if (togglePasswordBtn) togglePasswordBtn.style.color = "#60a5fa";
+            evaluateStrength(result);
+            showToast("Strong Password Generated!");
+        });
+    }
 
     // Add Account Handler
-    addAccountBtn.addEventListener("click", function () {
-        const service = serviceInput.value.trim();
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-        const notes = notesInput ? notesInput.value.trim() : "";
+    if (addAccountBtn) {
+        addAccountBtn.addEventListener("click", function () {
+            if (!serviceInput || !usernameInput || !passwordInput) {
+                showToast("Form fields missing", "error");
+                return;
+            }
 
-        if (!service || !username || !password) {
-            showToast("Please fill in all fields", "error");
-            return;
-        }
+            const service = serviceInput.value.trim();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const notes = notesInput ? notesInput.value.trim() : "";
 
-        const newAccount = {
-            id: Date.now().toString(),
-            service,
-            username,
-            password,
-            notes: notes,
-            customAvatar: selectedAccIconValue,
-            created: new Date().toLocaleDateString()
-        };
+            if (!service || !username || !password) {
+                showToast("Please fill in all fields (Service, Username, Password)", "error");
+                return;
+            }
 
-        if (!Array.isArray(categoryAccounts)) {
-            categoryAccounts = [];
-        }
+            const newAccount = {
+                id: Date.now().toString(),
+                service: service,
+                username: username,
+                password: password,
+                notes: notes,
+                customAvatar: selectedAccIconValue || "auto",
+                created: new Date().toLocaleDateString()
+            };
 
-        categoryAccounts.push(newAccount);
-        accountsData[currentCategory] = categoryAccounts;
-        localStorage.setItem(accKey, JSON.stringify(accountsData));
+            if (!Array.isArray(categoryAccounts)) {
+                categoryAccounts = [];
+            }
 
-        renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
-        closeModal();
-        showToast(`Account "${service}" saved!`);
-    });
+            categoryAccounts.push(newAccount);
+            accountsData[currentCategory] = categoryAccounts;
+            
+            try {
+                localStorage.setItem(accKey, JSON.stringify(accountsData));
+            } catch (e) {
+                showToast("Error saving to Storage", "error");
+                return;
+            }
+
+            renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+            closeModal();
+            showToast(`Account "${service}" saved!`);
+        });
+    }
 
     // Search Account Filter
-    searchInput.addEventListener("input", function () {
-        renderAccounts(this.value.trim().toLowerCase());
-    });
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
+            renderAccounts(this.value.trim().toLowerCase());
+        });
+    }
 
     // SVG Brand Logo Renderer
     function getBrandIcon(serviceName, customAvatar) {
@@ -826,36 +856,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Import Backup JSON
-    importBtn.addEventListener("click", function () {
-        importFile.click();
-    });
+    if (importBtn && importFile) {
+        importBtn.addEventListener("click", function () {
+            importFile.click();
+        });
 
-    importFile.addEventListener("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
+        importFile.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            try {
-                const imported = JSON.parse(event.target.result);
-                if (imported.categories && imported.accounts) {
-                    localStorage.setItem(catKey, JSON.stringify(imported.categories));
-                    localStorage.setItem(accKey, JSON.stringify(imported.accounts));
-                    
-                    accountsData = imported.accounts;
-                    categoryAccounts = accountsData[currentCategory] || [];
-                    
-                    renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
-                    showToast("Vault restored from backup successfully!");
-                } else {
-                    showToast("Invalid backup file format", "error");
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    if (imported.categories && imported.accounts) {
+                        localStorage.setItem(catKey, JSON.stringify(imported.categories));
+                        localStorage.setItem(accKey, JSON.stringify(imported.accounts));
+                        
+                        accountsData = imported.accounts;
+                        categoryAccounts = accountsData[currentCategory] || [];
+                        
+                        renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+                        showToast("Vault restored from backup successfully!");
+                    } else {
+                        showToast("Invalid backup file format", "error");
+                    }
+                } catch (err) {
+                    showToast("Failed to parse backup JSON", "error");
                 }
-            } catch (err) {
-                showToast("Failed to parse backup JSON", "error");
-            }
-        };
-        reader.readAsText(file);
-    });
+            };
+            reader.readAsText(file);
+        });
+    }
 
     // Helper Toast Notification
     function showToast(msg, type = "info") {
