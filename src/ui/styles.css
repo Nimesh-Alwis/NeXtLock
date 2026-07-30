@@ -743,3 +743,119 @@ body {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.btn-export-sidebar {
+    width: 100%;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.btn-export-sidebar:hover {
+    background: var(--primary-blue);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Secure Export Modal */
+.export-modal-content {
+    max-width: 480px;
+}
+
+.export-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+}
+
+.export-formats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.format-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.format-card input[type="radio"] {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    accent-color: var(--primary-blue);
+}
+
+.format-card:hover, .format-card.active {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+}
+
+.format-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.format-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.format-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.export-error-msg {
+    color: var(--danger-red);
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 16px;
+}
+
+.input-with-action {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.input-with-action input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.btn-toggle-eye {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
