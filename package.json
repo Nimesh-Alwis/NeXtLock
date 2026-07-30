@@ -1,4 +1,45 @@
 {
   "name": "nextlock",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "description": "NeXtLock - Premium Password Manager Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "password-manager",
+    "security",
+    "electron",
+    "desktop-app"
+  ],
+  "author": "Nimesh Alwis",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.nextlock.app",
+    "productName": "NeXtLock",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "src/**/*",
+      "index.html"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }

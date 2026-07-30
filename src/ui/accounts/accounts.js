@@ -60,26 +60,60 @@ document.addEventListener("DOMContentLoaded", function () {
     const chkSymbols = document.getElementById("chkSymbols");
     const chkNumbers = document.getElementById("chkNumbers");
 
-    // Backup & Restore
-    const exportBtn = document.getElementById("exportBtn");
-    const importBtn = document.getElementById("importBtn");
-    const importFile = document.getElementById("importFile");
+    // View Mode State ("grouped" or "flat")
+    let currentViewMode = "grouped";
+
+    const viewGroupedBtn = document.getElementById("viewGroupedBtn");
+    const viewFlatBtn = document.getElementById("viewFlatBtn");
+    const quickBrandPresets = document.getElementById("quickBrandPresets");
+
+    if (viewGroupedBtn && viewFlatBtn) {
+        viewGroupedBtn.addEventListener("click", function () {
+            currentViewMode = "grouped";
+            viewGroupedBtn.classList.add("active");
+            viewFlatBtn.classList.remove("active");
+            renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+        });
+
+        viewFlatBtn.addEventListener("click", function () {
+            currentViewMode = "flat";
+            viewFlatBtn.classList.add("active");
+            viewGroupedBtn.classList.remove("active");
+            renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+        });
+    }
 
     // Modal Handlers
-    function openModal() {
+    function openModal(prefillService = "") {
         addAccountModal.classList.remove("hidden");
-        serviceInput.value = "";
+        serviceInput.value = typeof prefillService === "string" ? prefillService : "";
         usernameInput.value = "";
         passwordInput.value = "";
         evaluateStrength("");
-        serviceInput.focus();
+        if (prefillService) {
+            usernameInput.focus();
+        } else {
+            serviceInput.focus();
+        }
     }
 
     function closeModal() {
         addAccountModal.classList.add("hidden");
     }
 
-    if (openAddAccountModalBtn) openAddAccountModalBtn.addEventListener("click", openModal);
+    // Quick Brand Pills Listener
+    if (quickBrandPresets) {
+        quickBrandPresets.addEventListener("click", function (e) {
+            const btn = e.target.closest(".brand-pill");
+            if (btn) {
+                const brand = btn.getAttribute("data-brand");
+                serviceInput.value = brand;
+                usernameInput.focus();
+            }
+        });
+    }
+
+    if (openAddAccountModalBtn) openAddAccountModalBtn.addEventListener("click", () => openModal());
     if (closeAddAccountModalBtn) closeAddAccountModalBtn.addEventListener("click", closeModal);
     if (cancelAddAccountModalBtn) cancelAddAccountModalBtn.addEventListener("click", closeModal);
 
@@ -328,6 +362,94 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function createAccountCardElement(acc) {
+        const card = document.createElement("div");
+        card.className = "account-card";
+        const iconHtml = getBrandIcon(acc.service);
+
+        card.innerHTML = `
+            <div class="account-info">
+                ${iconHtml}
+                <div class="account-meta">
+                    <div class="account-service">${acc.service}</div>
+                    <div class="account-user">${acc.username}</div>
+                </div>
+            </div>
+
+            <div class="account-secret">
+                <span class="masked-pass">••••••••</span>
+                <button class="btn-icon-action card-eye-btn" title="Show/Hide Password">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
+
+            <div class="account-actions">
+                <button class="btn-icon-action copy-user-btn" title="Copy Username">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>User</span>
+                </button>
+
+                <button class="btn-icon-action copy-pass-btn" title="Copy Password">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Pass</span>
+                </button>
+
+                <button class="btn-icon-action delete-btn" title="Delete Account">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+        `;
+
+        // Mask/Unmask Handler
+        const passSpan = card.querySelector(".masked-pass");
+        const cardEyeBtn = card.querySelector(".card-eye-btn");
+        cardEyeBtn.addEventListener("click", function () {
+            const isMasked = passSpan.classList.contains("unmasked");
+            if (isMasked) {
+                passSpan.textContent = "••••••••";
+                passSpan.classList.remove("unmasked");
+                cardEyeBtn.style.color = "var(--text-main)";
+            } else {
+                passSpan.textContent = acc.password;
+                passSpan.classList.add("unmasked");
+                cardEyeBtn.style.color = "#60a5fa";
+            }
+        });
+
+        // Copy Username Handler
+        const copyUserBtn = card.querySelector(".copy-user-btn");
+        copyUserBtn.addEventListener("click", function () {
+            copyToClipboard(acc.username).then(() => {
+                showToast(`Copied Username: ${acc.username}`);
+            });
+        });
+
+        // Copy Password Handler
+        const copyPassBtn = card.querySelector(".copy-pass-btn");
+        copyPassBtn.addEventListener("click", function () {
+            copyToClipboard(acc.password).then(() => {
+                showToast(`Password copied for ${acc.service}!`);
+            });
+        });
+
+        // Delete Account Handler
+        const deleteBtn = card.querySelector(".delete-btn");
+        deleteBtn.addEventListener("click", function () {
+            if (confirm(`Delete credentials for "${acc.service}" (${acc.username})?`)) {
+                const idx = categoryAccounts.findIndex(a => a.id === acc.id);
+                if (idx > -1) {
+                    categoryAccounts.splice(idx, 1);
+                    accountsData[currentCategory] = categoryAccounts;
+                    localStorage.setItem("accounts", JSON.stringify(accountsData));
+                    renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+                    showToast(`Deleted ${acc.service} (${acc.username})`);
+                }
+            }
+        });
+
+        return card;
+    }
+
     function renderAccounts(filterQuery = "") {
         accountList.innerHTML = "";
 
@@ -346,97 +468,84 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
             const emptyAddAccBtn = document.getElementById("emptyAddAccBtn");
-            if (emptyAddAccBtn) emptyAddAccBtn.addEventListener("click", openModal);
+            if (emptyAddAccBtn) emptyAddAccBtn.addEventListener("click", () => openModal());
             return;
         }
 
-        filtered.forEach(acc => {
-            const card = document.createElement("div");
-            card.className = "account-card";
-            const iconHtml = getBrandIcon(acc.service);
+        if (currentViewMode === "grouped") {
+            // Group accounts by Service Brand Name
+            const groupsMap = new Map();
+            filtered.forEach(acc => {
+                const serviceKey = acc.service.trim().toLowerCase();
+                if (!groupsMap.has(serviceKey)) {
+                    groupsMap.set(serviceKey, {
+                        displayName: acc.service.trim(),
+                        accounts: []
+                    });
+                }
+                groupsMap.get(serviceKey).accounts.push(acc);
+            });
 
-            card.innerHTML = `
-                <div class="account-info">
-                    ${iconHtml}
-                    <div class="account-meta">
-                        <div class="account-service">${acc.service}</div>
-                        <div class="account-user">${acc.username}</div>
+            groupsMap.forEach((groupObj) => {
+                const brandName = groupObj.displayName;
+                const accs = groupObj.accounts;
+
+                const groupCard = document.createElement("div");
+                groupCard.className = "brand-group-card open";
+
+                const iconHtml = getBrandIcon(brandName);
+                const countText = accs.length === 1 ? "1 Account" : `${accs.length} Accounts`;
+
+                groupCard.innerHTML = `
+                    <div class="brand-group-header">
+                        <div class="brand-group-left">
+                            ${iconHtml}
+                            <div class="brand-group-title">
+                                <span>${brandName}</span>
+                                <span class="account-count-badge">${countText}</span>
+                            </div>
+                        </div>
+                        <div class="brand-group-right">
+                            <button class="btn-brand-add" title="Add another account under ${brandName}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>+ Add Account</span>
+                            </button>
+                            <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
                     </div>
-                </div>
+                    <div class="brand-group-body"></div>
+                `;
 
-                <div class="account-secret">
-                    <span class="masked-pass">••••••••</span>
-                    <button class="btn-icon-action card-eye-btn" title="Show/Hide Password">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </button>
-                </div>
+                const headerEl = groupCard.querySelector(".brand-group-header");
+                const bodyEl = groupCard.querySelector(".brand-group-body");
+                const brandAddBtn = groupCard.querySelector(".btn-brand-add");
 
-                <div class="account-actions">
-                    <button class="btn-icon-action copy-user-btn" title="Copy Username">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>User</span>
-                    </button>
-
-                    <button class="btn-icon-action copy-pass-btn" title="Copy Password">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>Pass</span>
-                    </button>
-
-                    <button class="btn-icon-action delete-btn" title="Delete Account">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            `;
-
-            // Mask/Unmask Handler
-            const passSpan = card.querySelector(".masked-pass");
-            const cardEyeBtn = card.querySelector(".card-eye-btn");
-            cardEyeBtn.addEventListener("click", function () {
-                const isMasked = passSpan.classList.contains("unmasked");
-                if (isMasked) {
-                    passSpan.textContent = "••••••••";
-                    passSpan.classList.remove("unmasked");
-                    cardEyeBtn.style.color = "var(--text-main)";
-                } else {
-                    passSpan.textContent = acc.password;
-                    passSpan.classList.add("unmasked");
-                    cardEyeBtn.style.color = "#60a5fa";
-                }
-            });
-
-            // Copy Username Handler
-            const copyUserBtn = card.querySelector(".copy-user-btn");
-            copyUserBtn.addEventListener("click", function () {
-                copyToClipboard(acc.username).then(() => {
-                    showToast(`Copied Username: ${acc.username}`);
+                // Expand/Collapse accordion toggle
+                headerEl.addEventListener("click", function (e) {
+                    if (e.target.closest(".btn-brand-add")) return; // don't toggle when clicking add button
+                    groupCard.classList.toggle("open");
+                    groupCard.classList.toggle("collapsed");
                 });
-            });
 
-            // Copy Password Handler
-            const copyPassBtn = card.querySelector(".copy-pass-btn");
-            copyPassBtn.addEventListener("click", function () {
-                copyToClipboard(acc.password).then(() => {
-                    showToast(`Password copied for ${acc.service}!`);
+                // Add Account prefilled with brand name
+                brandAddBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    openModal(brandName);
                 });
-            });
 
-            // Delete Account Handler
-            const deleteBtn = card.querySelector(".delete-btn");
-            deleteBtn.addEventListener("click", function () {
-                if (confirm(`Delete credentials for "${acc.service}"?`)) {
-                    const idx = categoryAccounts.findIndex(a => a.id === acc.id);
-                    if (idx > -1) {
-                        categoryAccounts.splice(idx, 1);
-                        accountsData[currentCategory] = categoryAccounts;
-                        localStorage.setItem("accounts", JSON.stringify(accountsData));
-                        renderAccounts();
-                        showToast(`Deleted ${acc.service}`);
-                    }
-                }
-            });
+                // Append accounts inside group body
+                accs.forEach(acc => {
+                    bodyEl.appendChild(createAccountCardElement(acc));
+                });
 
-            accountList.appendChild(card);
-        });
+                accountList.appendChild(groupCard);
+            });
+        } else {
+            // Flat List View
+            filtered.forEach(acc => {
+                accountList.appendChild(createAccountCardElement(acc));
+            });
+        }
     }
 
     // Export Backup JSON

@@ -91,7 +91,17 @@
                 <div class="content-header">
                     <div>
                         <h1 class="page-title" id="categoryTitle">Category Accounts</h1>
-                        <p class="page-subtitle">Manage stored credentials, copy passwords, and generate new keys</p>
+                        <p class="page-subtitle">Manage stored credentials, group by brand, and copy passwords</p>
+                    </div>
+                    <div class="view-toggle-group">
+                        <button class="btn-view-toggle active" id="viewGroupedBtn" title="Group by Brand/Service">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            <span>Grouped</span>
+                        </button>
+                        <button class="btn-view-toggle" id="viewFlatBtn" title="Show All Cards">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                            <span>All Cards</span>
+                        </button>
                     </div>
                 </div>
 
@@ -107,13 +117,25 @@
     <div id="addAccountModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add New Credentials</h3>
+                <h3 id="addAccountModalTitle">Add New Credentials</h3>
                 <button class="modal-close" id="closeAddAccountModalBtn">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-field">
                     <label>Account / Service Name</label>
-                    <input type="text" id="serviceInput" placeholder="e.g. Google, Netflix, Bank of America">
+                    <input type="text" id="serviceInput" placeholder="e.g. Facebook, Google, Netflix">
+                    
+                    <!-- Quick Brand Presets -->
+                    <div class="quick-brand-presets" id="quickBrandPresets">
+                        <span class="preset-label">Popular:</span>
+                        <button type="button" class="brand-pill" data-brand="Facebook">Facebook</button>
+                        <button type="button" class="brand-pill" data-brand="Instagram">Instagram</button>
+                        <button type="button" class="brand-pill" data-brand="WhatsApp">WhatsApp</button>
+                        <button type="button" class="brand-pill" data-brand="TikTok">TikTok</button>
+                        <button type="button" class="brand-pill" data-brand="Google">Google</button>
+                        <button type="button" class="brand-pill" data-brand="GitHub">GitHub</button>
+                        <button type="button" class="brand-pill" data-brand="Netflix">Netflix</button>
+                    </div>
                 </div>
 
                 <div class="form-field">
