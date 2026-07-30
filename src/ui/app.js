@@ -31,9 +31,39 @@ document.addEventListener("DOMContentLoaded", function () {
     const accKey = `accounts_${activeProfileId}`;
     const iconKey = `categoryIcons_${activeProfileId}`;
 
-    let categories = JSON.parse(localStorage.getItem(catKey) || "[]");
-    let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
-    let iconMap = JSON.parse(localStorage.getItem(iconKey) || "{}");
+    let categories = [];
+    let accountsData = {};
+    let iconMap = {};
+
+    try {
+        const rawCat = localStorage.getItem(catKey);
+        if (rawCat) {
+            const parsed = JSON.parse(rawCat);
+            if (Array.isArray(parsed)) categories = parsed;
+        }
+    } catch (e) {
+        categories = [];
+    }
+
+    try {
+        const rawAcc = localStorage.getItem(accKey);
+        if (rawAcc) {
+            const parsed = JSON.parse(rawAcc);
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) accountsData = parsed;
+        }
+    } catch (e) {
+        accountsData = {};
+    }
+
+    try {
+        const rawIcon = localStorage.getItem(iconKey);
+        if (rawIcon) {
+            const parsed = JSON.parse(rawIcon);
+            if (parsed && typeof parsed === "object") iconMap = parsed;
+        }
+    } catch (e) {
+        iconMap = {};
+    }
 
     // Clean & Deduplicate Category Array (100% Fail-Safe)
     function sanitizeCategories(catList) {

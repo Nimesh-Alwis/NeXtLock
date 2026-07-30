@@ -24,8 +24,18 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("windowCategoryTitle").textContent = `${activeProfile.name} • ${currentCategory}`;
     document.getElementById("activeCatNav").textContent = currentCategory;
 
-    let accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
-    let categoryAccounts = accountsData[currentCategory] || [];
+    let accountsData = {};
+    try {
+        const rawAcc = localStorage.getItem(accKey);
+        if (rawAcc) {
+            const parsed = JSON.parse(rawAcc);
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) accountsData = parsed;
+        }
+    } catch (e) {
+        accountsData = {};
+    }
+
+    let categoryAccounts = Array.isArray(accountsData[currentCategory]) ? accountsData[currentCategory] : [];
 
     // Navigation Back
     const backBtn = document.getElementById("backBtn");
@@ -264,6 +274,10 @@ document.addEventListener("DOMContentLoaded", function () {
             customAvatar: selectedAccIconValue,
             created: new Date().toLocaleDateString()
         };
+
+        if (!Array.isArray(categoryAccounts)) {
+            categoryAccounts = [];
+        }
 
         categoryAccounts.push(newAccount);
         accountsData[currentCategory] = categoryAccounts;

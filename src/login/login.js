@@ -76,7 +76,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Load & Migrate Profiles Data
     function getProfiles() {
-        let profiles = JSON.parse(localStorage.getItem("profiles") || "[]");
+        let profiles = [];
+        try {
+            const raw = localStorage.getItem("profiles");
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) profiles = parsed;
+            }
+        } catch (e) {
+            profiles = [];
+        }
 
         // Migration for legacy single-user vaults
         const legacyPwd = localStorage.getItem("masterPassword");
