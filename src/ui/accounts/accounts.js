@@ -556,29 +556,185 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Export Backup JSON
-    exportBtn.addEventListener("click", function () {
-        const backupData = {
-            version: "1.0",
-            profileId: activeProfileId,
-            timestamp: new Date().toISOString(),
-            categories: JSON.parse(localStorage.getItem(catKey) || "[]"),
-            accounts: JSON.parse(localStorage.getItem(accKey) || "{}")
-        };
+    // Export Modal Elements
+    const exportModal = document.getElementById("exportModal");
+    const closeExportModalBtn = document.getElementById("closeExportModalBtn");
+    const cancelExportModalBtn = document.getElementById("cancelExportModalBtn");
+    const confirmExportBtn = document.getElementById("confirmExportBtn");
+    const exportMasterPassword = document.getElementById("exportMasterPassword");
+    const toggleExportPwd = document.getElementById("toggleExportPwd");
+    const exportErrorMsg = document.getElementById("exportErrorMsg");
+    const formatCards = document.querySelectorAll(".format-card");
 
-        const jsonStr = JSON.stringify(backupData, null, 2);
-        const blob = new Blob([jsonStr], { type: "application/json" });
+    // Toggle Eye inside Export Modal
+    if (toggleExportPwd && exportMasterPassword) {
+        toggleExportPwd.addEventListener("click", function () {
+            const isPass = exportMasterPassword.type === "password";
+            exportMasterPassword.type = isPass ? "text" : "password";
+            toggleExportPwd.style.color = isPass ? "#60a5fa" : "#9ca3af";
+        });
+    }
+
+    // Format Card Radio Selection UI
+    formatCards.forEach(card => {
+        card.addEventListener("click", function () {
+            formatCards.forEach(c => c.classList.remove("active"));
+            this.classList.add("active");
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        });
+    });
+
+    function openExportModal() {
+        if (!exportModal) return;
+        exportModal.classList.remove("hidden");
+        exportMasterPassword.value = "";
+        exportErrorMsg.textContent = "";
+        exportMasterPassword.focus();
+    }
+
+    function closeExportModal() {
+        if (!exportModal) return;
+        exportModal.classList.add("hidden");
+    }
+
+    if (exportBtn) exportBtn.addEventListener("click", openExportModal);
+    if (closeExportModalBtn) closeExportModalBtn.addEventListener("click", closeExportModal);
+    if (cancelExportModalBtn) cancelExportModalBtn.addEventListener("click", closeExportModal);
+
+    if (exportMasterPassword) {
+        exportMasterPassword.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") confirmExportBtn.click();
+        });
+    }
+
+    // Confirm & Process Export
+    if (confirmExportBtn) {
+        confirmExportBtn.addEventListener("click", function () {
+            const enteredPwd = exportMasterPassword.value.trim();
+
+            if (!enteredPwd) {
+                exportErrorMsg.textContent = "Please enter your Master Password to verify identity.";
+                return;
+            }
+
+            if (enteredPwd !== activeProfile.password) {
+                exportErrorMsg.textContent = "Incorrect Master Password. Verification failed.";
+                exportMasterPassword.value = "";
+                exportMasterPassword.focus();
+                return;
+            }
+
+            // Password verified -> Get selected format
+            const selectedRadio = document.querySelector('input[name="exportFormat"]:checked');
+            const format = selectedRadio ? selectedRadio.value : "md";
+
+            processVaultExport(format);
+            closeExportModal();
+        });
+    }
+
+    function processVaultExport(format) {
+        const categories = JSON.parse(localStorage.getItem(catKey) || "[]");
+        const accountsData = JSON.parse(localStorage.getItem(accKey) || "{}");
+        const profileName = activeProfile.name || "My_Vault";
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const fileNameBase = `NeXtLock_${profileName.replace(/\s+/g, "_")}_Export_${dateStr}`;
+
+        let fileContent = "";
+        let mimeType = "text/plain";
+        let extension = "txt";
+
+        if (format === "md") {
+            extension = "md";
+            mimeType = "text/markdown";
+            fileContent = `# 🔐 NeXtLock Vault Export - ${profileName}\n\n`;
+            fileContent += `**Export Date:** ${new Date().toLocaleString()}\n`;
+            fileContent += `**Total Categories:** ${categories.length}\n\n`;
+            fileContent += `---\n\n`;
+
+            categories.forEach(cat => {
+                const accs = accountsData[cat] || [];
+                fileContent += `## 📂 Category: ${cat}\n\n`;
+                if (accs.length === 0) {
+                    fileContent += `*No accounts saved in this category.*\n\n`;
+                } else {
+                    fileContent += `| Service / Brand | Username / Email | Password | Created Date |\n`;
+                    fileContent += `|---|---|---|---|\n`;
+                    accs.forEach(acc => {
+                        fileContent += `| ${acc.service} | \`${acc.username}\` | \`${acc.password}\` | ${acc.created || dateStr} |\n`;
+                    });
+                    fileContent += `\n`;
+                }
+            });
+        } else if (format === "csv") {
+            extension = "csv";
+            mimeType = "text/csv";
+            fileContent = `"Category","Service Name","Username / Email","Password","Created Date"\n`;
+            categories.forEach(cat => {
+                const accs = accountsData[cat] || [];
+                accs.forEach(acc => {
+                    const cleanCat = `"${cat.replace(/"/g, '""')}"`;
+                    const cleanServ = `"${acc.service.replace(/"/g, '""')}"`;
+                    const cleanUser = `"${acc.username.replace(/"/g, '""')}"`;
+                    const cleanPass = `"${acc.password.replace(/"/g, '""')}"`;
+                    const cleanDate = `"${(acc.created || dateStr).replace(/"/g, '""')}"`;
+                    fileContent += `${cleanCat},${cleanServ},${cleanUser},${cleanPass},${cleanDate}\n`;
+                });
+            });
+        } else if (format === "txt") {
+            extension = "txt";
+            mimeType = "text/plain";
+            fileContent = `==================================================\n`;
+            fileContent += `NeXtLock Vault Credentials Export\n`;
+            fileContent += `Profile Name: ${profileName}\n`;
+            fileContent += `Export Date : ${new Date().toLocaleString()}\n`;
+            fileContent += `==================================================\n\n`;
+
+            categories.forEach(cat => {
+                const accs = accountsData[cat] || [];
+                fileContent += `[ CATEGORY: ${cat.toUpperCase()} ]\n`;
+                fileContent += `--------------------------------------------------\n`;
+                if (accs.length === 0) {
+                    fileContent += `(No accounts)\n\n`;
+                } else {
+                    accs.forEach(acc => {
+                        fileContent += `Service  : ${acc.service}\n`;
+                        fileContent += `Username : ${acc.username}\n`;
+                        fileContent += `Password : ${acc.password}\n`;
+                        fileContent += `Created  : ${acc.created || dateStr}\n`;
+                        fileContent += `--------------------------------------------------\n`;
+                    });
+                    fileContent += `\n`;
+                }
+            });
+        } else if (format === "json") {
+            extension = "json";
+            mimeType = "application/json";
+            const backupObj = {
+                version: "1.0",
+                profileName: profileName,
+                profileId: activeProfileId,
+                timestamp: new Date().toISOString(),
+                categories: categories,
+                accounts: accountsData
+            };
+            fileContent = JSON.stringify(backupObj, null, 2);
+        }
+
+        // Trigger Download
+        const blob = new Blob([fileContent], { type: mimeType });
         const url = URL.createObjectURL(blob);
-
         const a = document.createElement("a");
         a.href = url;
-        a.download = `NeXtLock_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `${fileNameBase}.${extension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast("Backup file downloaded!");
-    });
+
+        showToast(`Exported vault credentials as .${extension}!`);
+    }
 
     // Import Backup JSON
     importBtn.addEventListener("click", function () {
