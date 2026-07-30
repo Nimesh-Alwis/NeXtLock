@@ -27,8 +27,52 @@ document.addEventListener("DOMContentLoaded", function () {
     const backToProfilesBtn = document.getElementById("backToProfilesBtn");
     const resetVaultLink = document.getElementById("resetVaultLink");
 
+    // Photo Upload Elements
+    const uploadPhotoBtn = document.getElementById("uploadPhotoBtn");
+    const profilePicInput = document.getElementById("profilePicInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+
     let selectedAvatarValue = "👤";
     let activeSelectedProfile = null;
+
+    if (uploadPhotoBtn && profilePicInput) {
+        uploadPhotoBtn.addEventListener("click", () => profilePicInput.click());
+
+        profilePicInput.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                showMessage("Image size should be less than 2MB.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                selectedAvatarValue = event.target.result;
+                if (avatarPreview) {
+                    avatarPreview.innerHTML = `<img src="${selectedAvatarValue}" alt="Profile Picture">`;
+                }
+                document.querySelectorAll(".avatar-pill").forEach(p => p.classList.remove("active"));
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Avatar Selection
+    if (avatarPills) {
+        avatarPills.addEventListener("click", function (e) {
+            const pill = e.target.closest(".avatar-pill");
+            if (pill) {
+                document.querySelectorAll(".avatar-pill").forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                selectedAvatarValue = pill.getAttribute("data-avatar") || "👤";
+                if (avatarPreview) {
+                    avatarPreview.textContent = selectedAvatarValue;
+                }
+            }
+        });
+    }
 
     // Load & Migrate Profiles Data
     function getProfiles() {
@@ -84,18 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setupPasswordToggle(toggleConfirmPwd, confirmMasterPassword);
     setupPasswordToggle(toggleUnlockPwd, unlockMasterPassword);
 
-    // Avatar Selection
-    if (avatarPills) {
-        avatarPills.addEventListener("click", function (e) {
-            const pill = e.target.closest(".avatar-pill");
-            if (pill) {
-                document.querySelectorAll(".avatar-pill").forEach(p => p.classList.remove("active"));
-                pill.classList.add("active");
-                selectedAvatarValue = pill.getAttribute("data-avatar") || "👤";
-            }
-        });
-    }
-
     // Strength Evaluator
     if (createMasterPassword) {
         createMasterPassword.addEventListener("input", function () {
@@ -146,9 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
         profiles.forEach(prof => {
             const card = document.createElement("div");
             card.className = "profile-card";
+
+            const isImage = prof.avatar && (prof.avatar.startsWith("data:image") || prof.avatar.startsWith("http"));
+            const avatarHtml = isImage 
+                ? `<img src="${prof.avatar}" class="prof-img" alt="${prof.name}">` 
+                : `<div class="prof-avatar">${prof.avatar || "👤"}</div>`;
+
             card.innerHTML = `
                 <button class="prof-delete-btn" title="Delete Profile">&times;</button>
-                <div class="prof-avatar">${prof.avatar || "👤"}</div>
+                ${avatarHtml}
                 <div class="prof-name">${prof.name}</div>
             `;
 
@@ -190,6 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
         profileNameInput.value = "";
         createMasterPassword.value = "";
         confirmMasterPassword.value = "";
+        selectedAvatarValue = "👤";
+        if (avatarPreview) avatarPreview.textContent = "👤";
         strengthBar.style.width = "0%";
         strengthLabel.textContent = "Password Strength: -";
         profileNameInput.focus();
@@ -202,7 +242,13 @@ document.addEventListener("DOMContentLoaded", function () {
         createProfileView.classList.add("hidden");
         unlockProfileView.classList.remove("hidden");
 
-        selectedAvatar.textContent = prof.avatar || "👤";
+        const isImage = prof.avatar && (prof.avatar.startsWith("data:image") || prof.avatar.startsWith("http"));
+        if (isImage) {
+            selectedAvatar.innerHTML = `<img src="${prof.avatar}" class="sel-img" alt="${prof.name}">`;
+        } else {
+            selectedAvatar.textContent = prof.avatar || "👤";
+        }
+
         selectedName.textContent = prof.name;
         unlockMasterPassword.value = "";
         unlockMasterPassword.focus();

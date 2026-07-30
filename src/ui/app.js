@@ -14,8 +14,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update Profile Badge in Header
     const userBadge = document.getElementById("lockVaultBtn");
     if (userBadge) {
+        const isImage = activeProfile.avatar && (activeProfile.avatar.startsWith("data:image") || activeProfile.avatar.startsWith("http"));
+        const avatarHtml = isImage 
+            ? `<img src="${activeProfile.avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" alt="Avatar">`
+            : `<span>${activeProfile.avatar || "👤"}</span>`;
+
         userBadge.innerHTML = `
-            <span>${activeProfile.avatar || "👤"}</span>
+            ${avatarHtml}
             <span>${activeProfile.name}</span>
             <span style="opacity: 0.6; margin-left: 4px;">• Lock</span>
         `;

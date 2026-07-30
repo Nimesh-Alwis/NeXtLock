@@ -66,9 +66,18 @@
                     </div>
                 </div>
 
-                <!-- Avatar Selection Pills -->
+                <!-- Profile Picture / Avatar Selection -->
                 <div class="avatar-selector">
-                    <label class="avatar-label">Choose Avatar:</label>
+                    <div class="avatar-header-row">
+                        <label class="avatar-label">Choose Profile Picture / Avatar:</label>
+                        <button type="button" class="btn-upload-photo" id="uploadPhotoBtn">📷 Upload Photo</button>
+                        <input type="file" id="profilePicInput" accept="image/*" hidden>
+                    </div>
+
+                    <div class="avatar-preview-wrapper" id="avatarPreviewWrap">
+                        <div class="avatar-preview" id="avatarPreview">👤</div>
+                    </div>
+
                     <div class="avatar-pills" id="avatarPills">
                         <button type="button" class="avatar-pill active" data-avatar="👤">👤</button>
                         <button type="button" class="avatar-pill" data-avatar="💼">💼</button>
