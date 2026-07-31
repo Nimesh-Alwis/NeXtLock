@@ -20,7 +20,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const activeProfile = profiles.find(p => p.id === activeProfileId) || { name: "My Vault", avatar: "👤" };
 
     // Title Updates
-    document.getElementById("categoryTitle").textContent = `${activeProfile.avatar || "👤"} ${currentCategory}`;
+    const catTitleEl = document.getElementById("categoryTitle");
+    if (catTitleEl) {
+        const avatarVal = activeProfile.avatar || "👤";
+        if (avatarVal.startsWith("data:image") || avatarVal.startsWith("http")) {
+            catTitleEl.innerHTML = `<img src="${avatarVal}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:10px;display:inline-block;box-shadow:0 2px 8px rgba(0,0,0,0.3);" alt="Avatar"><span>${currentCategory}</span>`;
+        } else {
+            catTitleEl.textContent = `${avatarVal} ${currentCategory}`;
+        }
+    }
     document.getElementById("windowCategoryTitle").textContent = `${activeProfile.name} • ${currentCategory}`;
     document.getElementById("activeCatNav").textContent = currentCategory;
 
