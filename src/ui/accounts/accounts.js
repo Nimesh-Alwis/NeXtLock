@@ -493,6 +493,11 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
             <div class="account-secret">
+                <span class="secret-username" title="Username: ${acc.username}">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    ${acc.username}
+                </span>
+                <span class="secret-divider">|</span>
                 <span class="masked-pass">••••••••</span>
                 <button class="btn-icon-action card-eye-btn" title="Show/Hide Password">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>

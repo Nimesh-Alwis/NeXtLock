@@ -543,6 +543,40 @@ body {
     color: #60a5fa;
 }
 
+/* Username chip inside the password row */
+.secret-username {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+}
+
+.secret-username svg {
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+.secret-divider {
+    color: rgba(255, 255, 255, 0.12);
+    font-size: 14px;
+    font-weight: 300;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+
 .account-actions {
     display: flex;
     gap: 8px;
