@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // View Mode State ("grouped" or "flat")
     let currentViewMode = "grouped";
+    let editingAccountId = null;
 
     const viewGroupedBtn = document.getElementById("viewGroupedBtn");
     const viewFlatBtn = document.getElementById("viewFlatBtn");
@@ -144,28 +145,61 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Modal Handlers
-    function openModal(prefillService = "") {
+    const addAccountModalTitle = document.getElementById("addAccountModalTitle");
+
+    function openModal(prefillService = "", editAcc = null) {
         addAccountModal.classList.remove("hidden");
-        serviceInput.value = typeof prefillService === "string" ? prefillService : "";
-        usernameInput.value = "";
-        passwordInput.value = "";
-        if (notesInput) notesInput.value = "";
-        selectedAccIconValue = "auto";
-        if (accAvatarPills) {
-            document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
-            const autoPill = accAvatarPills.querySelector('[data-icon="auto"]');
-            if (autoPill) autoPill.classList.add("active");
-        }
-        evaluateStrength("");
-        if (prefillService) {
+        
+        if (editAcc) {
+            editingAccountId = editAcc.id;
+            if (addAccountModalTitle) addAccountModalTitle.textContent = "Edit Account Credentials";
+            if (addAccountBtn) addAccountBtn.textContent = "Save Changes";
+
+            serviceInput.value = editAcc.service || "";
+            usernameInput.value = editAcc.username || "";
+            passwordInput.value = editAcc.password || "";
+            if (notesInput) notesInput.value = editAcc.notes || "";
+            selectedAccIconValue = editAcc.customAvatar || "auto";
+
+            if (accAvatarPills) {
+                document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
+                const matchingPill = accAvatarPills.querySelector(`[data-icon="${selectedAccIconValue}"]`);
+                if (matchingPill) {
+                    matchingPill.classList.add("active");
+                } else {
+                    const autoPill = accAvatarPills.querySelector('[data-icon="auto"]');
+                    if (autoPill) autoPill.classList.add("active");
+                }
+            }
+            evaluateStrength(editAcc.password || "");
             usernameInput.focus();
         } else {
-            serviceInput.focus();
+            editingAccountId = null;
+            if (addAccountModalTitle) addAccountModalTitle.textContent = "Add New Credentials";
+            if (addAccountBtn) addAccountBtn.textContent = "Save Account";
+
+            serviceInput.value = typeof prefillService === "string" ? prefillService : "";
+            usernameInput.value = "";
+            passwordInput.value = "";
+            if (notesInput) notesInput.value = "";
+            selectedAccIconValue = "auto";
+            if (accAvatarPills) {
+                document.querySelectorAll(".acc-avatar-pill").forEach(p => p.classList.remove("active"));
+                const autoPill = accAvatarPills.querySelector('[data-icon="auto"]');
+                if (autoPill) autoPill.classList.add("active");
+            }
+            evaluateStrength("");
+            if (prefillService) {
+                usernameInput.focus();
+            } else {
+                serviceInput.focus();
+            }
         }
     }
 
     function closeModal() {
         addAccountModal.classList.add("hidden");
+        editingAccountId = null;
     }
 
     // Quick Brand Pills Listener
@@ -268,7 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Add Account Handler
+    // Add / Edit Account Handler
     if (addAccountBtn) {
         addAccountBtn.addEventListener("click", function () {
             if (!serviceInput || !usernameInput || !passwordInput) {
@@ -286,21 +320,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const newAccount = {
-                id: Date.now().toString(),
-                service: service,
-                username: username,
-                password: password,
-                notes: notes,
-                customAvatar: selectedAccIconValue || "auto",
-                created: new Date().toLocaleDateString()
-            };
-
             if (!Array.isArray(categoryAccounts)) {
                 categoryAccounts = [];
             }
 
-            categoryAccounts.push(newAccount);
+            if (editingAccountId) {
+                // Update existing account
+                const idx = categoryAccounts.findIndex(a => a.id === editingAccountId);
+                if (idx > -1) {
+                    categoryAccounts[idx].service = service;
+                    categoryAccounts[idx].username = username;
+                    categoryAccounts[idx].password = password;
+                    categoryAccounts[idx].notes = notes;
+                    categoryAccounts[idx].customAvatar = selectedAccIconValue || "auto";
+                    categoryAccounts[idx].updated = new Date().toLocaleDateString();
+                }
+            } else {
+                // Create new account
+                const newAccount = {
+                    id: Date.now().toString(),
+                    service: service,
+                    username: username,
+                    password: password,
+                    notes: notes,
+                    customAvatar: selectedAccIconValue || "auto",
+                    created: new Date().toLocaleDateString()
+                };
+                categoryAccounts.push(newAccount);
+            }
+
             accountsData[currentCategory] = categoryAccounts;
             
             try {
@@ -311,8 +359,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             renderAccounts(searchInput ? searchInput.value.trim().toLowerCase() : "");
+            const wasEditing = !!editingAccountId;
             closeModal();
-            showToast(`Account "${service}" saved!`);
+            showToast(wasEditing ? `Account "${service}" updated!` : `Account "${service}" saved!`);
         });
     }
 
@@ -515,6 +564,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span>Pass</span>
                 </button>
 
+                <button class="btn-icon-action edit-btn" title="Edit Account">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span>Edit</span>
+                </button>
+
                 <button class="btn-icon-action delete-btn" title="Delete Account">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
@@ -563,6 +617,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 showToast(`Password copied for ${acc.service}!`);
             });
         });
+
+        // Edit Account Handler
+        const editBtn = card.querySelector(".edit-btn");
+        if (editBtn) {
+            editBtn.addEventListener("click", function () {
+                openModal("", acc);
+            });
+        }
 
         // Delete Account Handler
         const deleteBtn = card.querySelector(".delete-btn");
