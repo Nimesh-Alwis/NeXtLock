@@ -18,7 +18,7 @@ function createWindow() {
             devTools: true
         }
     });
-
+    // test comment
     // Load the main login page
     mainWindow.loadFile(path.join(__dirname, 'src/login/login.html'));
 
