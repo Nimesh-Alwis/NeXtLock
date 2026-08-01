@@ -193,24 +193,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 : `<div class="prof-avatar">${prof.avatar || "👤"}</div>`;
 
             card.innerHTML = `
-                <button class="prof-delete-btn" title="Delete Profile">&times;</button>
                 ${avatarHtml}
                 <div class="prof-name">${prof.name}</div>
             `;
 
             // Click to Unlock Profile
-            card.addEventListener("click", function (e) {
-                if (e.target.closest(".prof-delete-btn")) return;
+            card.addEventListener("click", function () {
                 showUnlockProfileView(prof);
-            });
-
-            // Delete Profile
-            const deleteBtn = card.querySelector(".prof-delete-btn");
-            deleteBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (confirm(`Are you sure you want to delete profile "${prof.name}" and all its saved passwords?`)) {
-                    deleteProfile(prof.id);
-                }
             });
 
             profilesGrid.appendChild(card);

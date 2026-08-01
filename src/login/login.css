@@ -439,32 +439,7 @@ body {
     word-break: break-word;
 }
 
-.profile-card .prof-delete-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border: none;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
 
-.profile-card:hover .prof-delete-btn {
-    opacity: 1;
-}
-
-.profile-card .prof-delete-btn:hover {
-    background: #ef4444;
-    color: #ffffff;
-}
 
 .profile-card.create-card {
     border: 1px dashed rgba(59, 130, 246, 0.4);
