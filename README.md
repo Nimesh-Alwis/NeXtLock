@@ -14,14 +14,8 @@ A modern, secure, and offline **Password & Credential Vault** built with HTML, C
 
 ---
 
-## 🚀 How to Run
 
-Simply open `index.html` or `src/login/login.html` in any web browser!
 
-```bash
-# Or serve locally via Node / Live Server:
-npx serve .
-```
 
 ---
 
