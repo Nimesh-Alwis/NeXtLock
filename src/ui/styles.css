@@ -318,6 +318,30 @@ body {
     background: rgba(239, 68, 68, 0.2);
 }
 
+.btn-delete-profile-sidebar {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #fca5a5;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-profile-sidebar:hover {
+    background: rgba(220, 38, 38, 0.3);
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
 /* Main Content Area */
 .main-content {
     flex: 1;

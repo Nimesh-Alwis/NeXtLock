@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const toggleUnlockPwd = document.getElementById("toggleUnlockPwd");
     const unlockProfileBtn = document.getElementById("unlockProfileBtn");
     const backToProfilesBtn = document.getElementById("backToProfilesBtn");
-    const resetVaultLink = document.getElementById("resetVaultLink");
 
     // Photo Upload Elements
     const uploadPhotoBtn = document.getElementById("uploadPhotoBtn");
@@ -378,17 +377,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Reset All Profiles Data
-    if (resetVaultLink) {
-        resetVaultLink.addEventListener("click", function (e) {
-            e.preventDefault();
-            if (confirm("WARNING: This will wipe ALL profiles and all saved password vaults! Are you sure?")) {
-                localStorage.clear();
-                alert("All profiles and vault data reset successfully.");
-                window.location.reload();
-            }
-        });
-    }
+
 
     // Initialize
     renderProfilesView();

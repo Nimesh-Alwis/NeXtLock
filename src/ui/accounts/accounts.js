@@ -978,5 +978,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 2500);
     }
 
+    // Delete Current Active Profile Handler
+    const deleteProfileSidebarBtn = document.getElementById("deleteProfileSidebarBtn");
+    if (deleteProfileSidebarBtn) {
+        deleteProfileSidebarBtn.addEventListener("click", function () {
+            const confirmDelete = confirm(`Are you sure you want to delete profile "${activeProfile.name}" and all its saved vault data? This action cannot be undone.`);
+            if (confirmDelete) {
+                // Delete active profile vault data
+                localStorage.removeItem(catKey);
+                localStorage.removeItem(accKey);
+                localStorage.removeItem("categoryIcons_" + activeProfileId);
+
+                // Update profiles array
+                let allProfiles = [];
+                try {
+                    const raw = localStorage.getItem("profiles");
+                    if (raw) allProfiles = JSON.parse(raw);
+                } catch (e) {
+                    allProfiles = [];
+                }
+
+                allProfiles = allProfiles.filter(p => p.id !== activeProfileId);
+                localStorage.setItem("profiles", JSON.stringify(allProfiles));
+
+                // Clear current active session
+                localStorage.removeItem("activeProfileId");
+                localStorage.removeItem("masterPassword");
+
+                alert(`Profile "${activeProfile.name}" deleted successfully.`);
+                window.location.href = "../../login/login.html";
+            }
+        });
+    }
+
     renderAccounts();
 });
