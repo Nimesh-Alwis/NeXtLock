@@ -5,10 +5,10 @@ let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 1150,
-        height: 750,
-        minWidth: 900,
-        minHeight: 600,
+        width: 1300,
+        height: 850,
+        minWidth: 950,
+        minHeight: 650,
         title: 'NeXtLock Vault Security',
         autoHideMenuBar: true,
         backgroundColor: '#090d16',
@@ -18,7 +18,9 @@ function createWindow() {
             devTools: true
         }
     });
-    // test comment
+
+    mainWindow.maximize();
+
     // Load the main login page
     mainWindow.loadFile(path.join(__dirname, 'src/login/login.html'));
 

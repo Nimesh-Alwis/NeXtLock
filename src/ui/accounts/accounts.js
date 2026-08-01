@@ -533,12 +533,7 @@ document.addEventListener("DOMContentLoaded", function () {
         card.className = "account-card";
         const iconHtml = getBrandIcon(acc.service, acc.customAvatar);
 
-        const notesHtml = acc.notes ? `
-            <div class="account-notes-box">
-                <div class="notes-text">📝 ${acc.notes}</div>
-                <button class="copy-notes-btn" title="Copy Notes">Copy</button>
-            </div>
-        ` : "";
+        const hasNotes = acc.notes && acc.notes.trim().length > 0;
 
         card.innerHTML = `
             <div class="account-info">
@@ -572,6 +567,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span>Pass</span>
                 </button>
 
+                <button class="btn-icon-action view-notes-btn ${hasNotes ? 'has-notes' : ''}" title="View Notes & Description">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 1 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    <span>${hasNotes ? '📝 Notes' : 'Notes'}</span>
+                </button>
+
                 <button class="btn-icon-action edit-btn" title="Edit Account">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     <span>Edit</span>
@@ -581,16 +581,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
             </div>
-            ${notesHtml}
         `;
 
-        // Copy Notes Handler
-        const copyNotesBtn = card.querySelector(".copy-notes-btn");
-        if (copyNotesBtn) {
-            copyNotesBtn.addEventListener("click", function () {
-                copyToClipboard(acc.notes).then(() => {
-                    showToast("Notes copied to clipboard!");
-                });
+        // View Notes Side Drawer Handler
+        const viewNotesBtn = card.querySelector(".view-notes-btn");
+        if (viewNotesBtn) {
+            viewNotesBtn.addEventListener("click", function () {
+                openNotesDrawer(acc);
             });
         }
 
@@ -650,6 +647,120 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         return card;
+    }
+
+    // Side Drawer Logic for Description & Secret Notes
+    let activeDrawerAccount = null;
+
+    function openNotesDrawer(acc) {
+        activeDrawerAccount = acc;
+        const drawerOverlay = document.getElementById("notesDrawerOverlay");
+        if (!drawerOverlay) return;
+
+        const brandIconHtml = getBrandIcon(acc.service, acc.customAvatar);
+        const drawerBrandIcon = document.getElementById("drawerBrandIcon");
+        if (drawerBrandIcon) drawerBrandIcon.innerHTML = brandIconHtml;
+
+        document.getElementById("drawerAccountService").textContent = acc.service;
+        document.getElementById("drawerAccountUsername").textContent = acc.username;
+
+        document.getElementById("drawerDetailService").textContent = acc.service;
+        document.getElementById("drawerDetailUser").textContent = acc.username;
+        document.getElementById("drawerDetailPass").textContent = "••••••••";
+        const drawerTogglePassBtn = document.getElementById("drawerTogglePassBtn");
+        if (drawerTogglePassBtn) drawerTogglePassBtn.textContent = "Show";
+
+        document.getElementById("drawerDetailCreated").textContent = acc.created || new Date().toLocaleDateString();
+
+        const drawerNotesDisplay = document.getElementById("drawerNotesDisplay");
+        if (acc.notes && acc.notes.trim()) {
+            drawerNotesDisplay.textContent = acc.notes;
+            drawerNotesDisplay.style.fontStyle = "normal";
+            drawerNotesDisplay.style.color = "#cbd5e1";
+        } else {
+            drawerNotesDisplay.textContent = "(No description or secret notes saved for this account. Click 'Edit Account Details' below to add notes.)";
+            drawerNotesDisplay.style.fontStyle = "italic";
+            drawerNotesDisplay.style.color = "#6b7280";
+        }
+
+        drawerOverlay.classList.remove("hidden");
+    }
+
+    function closeNotesDrawer() {
+        const drawerOverlay = document.getElementById("notesDrawerOverlay");
+        if (drawerOverlay) drawerOverlay.classList.add("hidden");
+        activeDrawerAccount = null;
+    }
+
+    const closeNotesDrawerBtn = document.getElementById("closeNotesDrawerBtn");
+    const notesDrawerOverlay = document.getElementById("notesDrawerOverlay");
+    const drawerCopyUserBtn = document.getElementById("drawerCopyUserBtn");
+    const drawerTogglePassBtn = document.getElementById("drawerTogglePassBtn");
+    const drawerCopyPassBtn = document.getElementById("drawerCopyPassBtn");
+    const drawerCopyNotesBtn = document.getElementById("drawerCopyNotesBtn");
+    const drawerEditAccBtn = document.getElementById("drawerEditAccBtn");
+
+    if (closeNotesDrawerBtn) closeNotesDrawerBtn.addEventListener("click", closeNotesDrawer);
+    if (notesDrawerOverlay) {
+        notesDrawerOverlay.addEventListener("click", function (e) {
+            if (e.target === notesDrawerOverlay) closeNotesDrawer();
+        });
+    }
+
+    if (drawerCopyUserBtn) {
+        drawerCopyUserBtn.addEventListener("click", function () {
+            if (activeDrawerAccount) {
+                copyToClipboard(activeDrawerAccount.username).then(() => {
+                    showToast(`Copied Username: ${activeDrawerAccount.username}`);
+                });
+            }
+        });
+    }
+
+    if (drawerTogglePassBtn) {
+        drawerTogglePassBtn.addEventListener("click", function () {
+            const passVal = document.getElementById("drawerDetailPass");
+            if (!activeDrawerAccount || !passVal) return;
+            if (passVal.textContent === "••••••••") {
+                passVal.textContent = activeDrawerAccount.password;
+                drawerTogglePassBtn.textContent = "Hide";
+            } else {
+                passVal.textContent = "••••••••";
+                drawerTogglePassBtn.textContent = "Show";
+            }
+        });
+    }
+
+    if (drawerCopyPassBtn) {
+        drawerCopyPassBtn.addEventListener("click", function () {
+            if (activeDrawerAccount) {
+                copyToClipboard(activeDrawerAccount.password).then(() => {
+                    showToast(`Password copied for ${activeDrawerAccount.service}!`);
+                });
+            }
+        });
+    }
+
+    if (drawerCopyNotesBtn) {
+        drawerCopyNotesBtn.addEventListener("click", function () {
+            if (activeDrawerAccount && activeDrawerAccount.notes) {
+                copyToClipboard(activeDrawerAccount.notes).then(() => {
+                    showToast("Description & notes copied to clipboard!");
+                });
+            } else {
+                showToast("No notes available to copy", "error");
+            }
+        });
+    }
+
+    if (drawerEditAccBtn) {
+        drawerEditAccBtn.addEventListener("click", function () {
+            if (activeDrawerAccount) {
+                const targetAcc = activeDrawerAccount;
+                closeNotesDrawer();
+                openModal("", targetAcc);
+            }
+        });
     }
 
     function renderAccounts(filterQuery = "") {

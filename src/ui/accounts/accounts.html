@@ -275,6 +275,66 @@
         </div>
     </div>
 
+    <!-- Account Description & Notes Side Drawer (Side Tab) -->
+    <div id="notesDrawerOverlay" class="drawer-overlay hidden">
+        <aside class="notes-drawer" id="notesDrawer">
+            <div class="drawer-header">
+                <div class="drawer-brand">
+                    <div id="drawerBrandIcon" class="drawer-icon">💬</div>
+                    <div>
+                        <h3 id="drawerAccountService">Service Name</h3>
+                        <p id="drawerAccountUsername" class="drawer-sub">username@email.com</p>
+                    </div>
+                </div>
+                <button class="btn-close-drawer" id="closeNotesDrawerBtn" title="Close Side Panel">&times;</button>
+            </div>
+
+            <div class="drawer-body">
+                <div class="drawer-section">
+                    <label class="drawer-label">CREDENTIAL DETAILS</label>
+                    <div class="drawer-detail-card">
+                        <div class="detail-row">
+                            <span class="detail-name">Service:</span>
+                            <span class="detail-val" id="drawerDetailService">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-name">Username:</span>
+                            <span class="detail-val" id="drawerDetailUser">-</span>
+                            <button class="btn-mini-copy" id="drawerCopyUserBtn">Copy</button>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-name">Password:</span>
+                            <span class="detail-val" id="drawerDetailPass">••••••••</span>
+                            <button class="btn-mini-copy" id="drawerTogglePassBtn">Show</button>
+                            <button class="btn-mini-copy" id="drawerCopyPassBtn">Copy</button>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-name">Created:</span>
+                            <span class="detail-val" id="drawerDetailCreated">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="drawer-section">
+                    <label class="drawer-label">DESCRIPTION & SECRET NOTES</label>
+                    <div class="drawer-notes-container">
+                        <div id="drawerNotesDisplay" class="drawer-notes-text">
+                            <!-- Notes text -->
+                        </div>
+                        <button class="btn-copy-drawer-notes" id="drawerCopyNotesBtn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Copy Notes</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drawer-footer">
+                <button class="btn-primary-drawer" id="drawerEditAccBtn">Edit Account Details</button>
+            </div>
+        </aside>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="toast-container"></div>
 
