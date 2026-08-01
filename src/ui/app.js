@@ -633,18 +633,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     fileContent += `\n`;
                 }
             });
-        } else if (format === "json") {
-            extension = "json";
-            mimeType = "application/json";
-            const backupObj = {
-                version: "1.0",
-                profileName: profileName,
-                profileId: activeProfileId,
-                timestamp: new Date().toISOString(),
-                categories: cats,
-                accounts: accsData
-            };
-            fileContent = JSON.stringify(backupObj, null, 2);
         }
 
         const blob = new Blob([fileContent], { type: mimeType });
@@ -658,6 +646,45 @@ document.addEventListener("DOMContentLoaded", function () {
         URL.revokeObjectURL(url);
 
         showToast(`Full Vault exported as .${extension}!`);
+    }
+
+    // Dashboard Multi-Format Import Handler (.md, .txt, .csv)
+    const openDashboardImportBtn = document.getElementById("openDashboardImportBtn");
+    const dashboardImportFile = document.getElementById("dashboardImportFile");
+
+    if (openDashboardImportBtn && dashboardImportFile) {
+        openDashboardImportBtn.addEventListener("click", function () {
+            dashboardImportFile.click();
+        });
+
+        dashboardImportFile.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const content = event.target.result;
+                    const parsed = parseVaultFileContent(content, file.name);
+                    const res = executeVaultImport(parsed, catKey, accKey);
+
+                    if (res.success) {
+                        // Refresh active categories list
+                        try {
+                            categories = JSON.parse(localStorage.getItem(catKey) || "[]");
+                        } catch (err) {}
+                        renderCategories();
+                        showToast(`Successfully imported ${res.count} account(s) from .${file.name.split('.').pop()}`);
+                    } else {
+                        showToast("No valid credentials found in file", "error");
+                    }
+                } catch (err) {
+                    showToast("Failed to parse import file", "error");
+                }
+                dashboardImportFile.value = "";
+            };
+            reader.readAsText(file);
+        });
     }
 
     // Helper Toast Notification
@@ -705,6 +732,211 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = "../login/login.html";
             }
         });
+    }
+
+    // Multi-Format Vault Parsers & Import Execution (.md, .txt, .csv)
+    function parseVaultFileContent(content, fileName) {
+        if (!content) return null;
+        const ext = (fileName || "").split('.').pop().toLowerCase();
+
+        if (ext === "csv" || content.startsWith('"Category"') || content.startsWith("Category,")) {
+            return parseCSVVault(content);
+        } else if (ext === "md" || content.includes("## 📂 Category") || content.includes("## Category") || content.includes("|---|")) {
+            return parseMarkdownVault(content);
+        } else {
+            return parseTextVault(content);
+        }
+    }
+
+    function parseCSVVault(content) {
+        const lines = content.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0) return null;
+
+        const categories = new Set();
+        const accounts = {};
+
+        function parseCSVLine(line) {
+            const values = [];
+            let current = "";
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    values.push(current.trim());
+                    current = "";
+                } else {
+                    current += char;
+                }
+            }
+            values.push(current.trim());
+            return values;
+        }
+
+        let startIndex = 0;
+        const firstRow = parseCSVLine(lines[0]);
+        if (firstRow[0] && (firstRow[0].toLowerCase().includes("category") || firstRow[1]?.toLowerCase().includes("service"))) {
+            startIndex = 1;
+        }
+
+        for (let i = startIndex; i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            if (cols.length < 3) continue;
+
+            const category = cols[0] || "Imported Vault";
+            const service = cols[1] || "Unnamed Service";
+            const username = cols[2] || "";
+            const password = cols[3] || "";
+            const created = cols[4] || new Date().toLocaleDateString();
+
+            if (service && service.toLowerCase() !== "service name") {
+                categories.add(category);
+                if (!accounts[category]) accounts[category] = [];
+                accounts[category].push({
+                    id: `imp_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                    service: service,
+                    username: username,
+                    password: password,
+                    created: created
+                });
+            }
+        }
+
+        return { categories: Array.from(categories), accounts };
+    }
+
+    function parseMarkdownVault(content) {
+        const lines = content.split(/\r?\n/);
+        const categories = new Set();
+        const accounts = {};
+
+        let currentCategory = "Imported Vault";
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+
+            if (trimmed.startsWith("##")) {
+                let catName = trimmed.replace(/^##\s*/, "").replace(/^📂\s*/, "").replace(/^Category:\s*/i, "").trim();
+                if (catName) currentCategory = catName;
+            } else if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+                if (trimmed.includes("---|---") || trimmed.toLowerCase().includes("service / brand") || trimmed.toLowerCase().includes("username / email")) {
+                    return;
+                }
+
+                const cols = trimmed.split("|").map(c => c.trim().replace(/^`|`$/g, ""));
+                if (cols.length >= 4) {
+                    const service = cols[1];
+                    const username = cols[2] || "";
+                    const password = cols[3] || "";
+                    const created = cols[4] || new Date().toLocaleDateString();
+
+                    if (service && service.toLowerCase() !== "service" && service !== "---|---") {
+                        categories.add(currentCategory);
+                        if (!accounts[currentCategory]) accounts[currentCategory] = [];
+                        accounts[currentCategory].push({
+                            id: `imp_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                            service: service,
+                            username: username,
+                            password: password,
+                            created: created
+                        });
+                    }
+                }
+            }
+        });
+
+        return { categories: Array.from(categories), accounts };
+    }
+
+    function parseTextVault(content) {
+        const lines = content.split(/\r?\n/);
+        const categories = new Set();
+        const accounts = {};
+
+        let currentCategory = "Imported Vault";
+        let currentAcc = {};
+
+        function saveCurrentAcc() {
+            if (currentAcc.service) {
+                categories.add(currentCategory);
+                if (!accounts[currentCategory]) accounts[currentCategory] = [];
+                accounts[currentCategory].push({
+                    id: `imp_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                    service: currentAcc.service,
+                    username: currentAcc.username || "",
+                    password: currentAcc.password || "",
+                    created: currentAcc.created || new Date().toLocaleDateString()
+                });
+                currentAcc = {};
+            }
+        }
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+
+            if (trimmed.startsWith("[ CATEGORY:") || trimmed.startsWith("[CATEGORY:")) {
+                saveCurrentAcc();
+                const catName = trimmed.replace(/^\[\s*CATEGORY:\s*/i, "").replace(/\s*\]$/, "").trim();
+                if (catName) currentCategory = catName;
+            } else if (trimmed.startsWith("Service  :") || trimmed.startsWith("Service:")) {
+                saveCurrentAcc();
+                currentAcc.service = trimmed.replace(/^Service\s*:\s*/i, "").trim();
+            } else if (trimmed.startsWith("Username :") || trimmed.startsWith("Username:")) {
+                currentAcc.username = trimmed.replace(/^Username\s*:\s*/i, "").trim();
+            } else if (trimmed.startsWith("Password :") || trimmed.startsWith("Password:")) {
+                currentAcc.password = trimmed.replace(/^Password\s*:\s*/i, "").trim();
+            } else if (trimmed.startsWith("Created  :") || trimmed.startsWith("Created:")) {
+                currentAcc.created = trimmed.replace(/^Created\s*:\s*/i, "").trim();
+            } else if (trimmed.startsWith("--------------------------------------------------")) {
+                saveCurrentAcc();
+            }
+        });
+
+        saveCurrentAcc();
+
+        return { categories: Array.from(categories), accounts };
+    }
+
+    function executeVaultImport(parsedData, targetCatKey, targetAccKey) {
+        if (!parsedData || !parsedData.accounts || Object.keys(parsedData.accounts).length === 0) {
+            return { success: false, count: 0 };
+        }
+
+        let existingCats = JSON.parse(localStorage.getItem(targetCatKey) || "[]");
+        let existingAccs = JSON.parse(localStorage.getItem(targetAccKey) || "{}");
+
+        let totalImported = 0;
+
+        parsedData.categories.forEach(cat => {
+            if (!existingCats.includes(cat)) {
+                existingCats.push(cat);
+            }
+        });
+
+        Object.keys(parsedData.accounts).forEach(cat => {
+            if (!existingAccs[cat]) existingAccs[cat] = [];
+            parsedData.accounts[cat].forEach(newAcc => {
+                const exists = existingAccs[cat].some(
+                    a => a.service.toLowerCase() === newAcc.service.toLowerCase() &&
+                         a.username.toLowerCase() === newAcc.username.toLowerCase()
+                );
+                if (!exists) {
+                    existingAccs[cat].push(newAcc);
+                    totalImported++;
+                }
+            });
+        });
+
+        localStorage.setItem(targetCatKey, JSON.stringify(existingCats));
+        localStorage.setItem(targetAccKey, JSON.stringify(existingAccs));
+
+        return { success: true, count: totalImported };
     }
 
     renderCategories();

@@ -58,12 +58,19 @@
                     <span>Add New Category</span>
                 </button>
                 
-                <!-- Backup & Export -->
-                <div class="nav-section-title">BACKUP & EXPORT</div>
-                <button class="btn-export-sidebar" id="openDashboardExportBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span>Export Full Vault</span>
-                </button>
+                <!-- Backup & Restore Tools -->
+                <div class="nav-section-title">BACKUP & TOOLS</div>
+                <div class="backup-tools">
+                    <button class="btn-tool" id="openDashboardExportBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>Export Vault</span>
+                    </button>
+                    <button class="btn-tool" id="openDashboardImportBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span>Import Vault</span>
+                    </button>
+                    <input type="file" id="dashboardImportFile" accept=".md,.txt,.csv" hidden>
+                </div>
 
                 <!-- Vault Stats Widget -->
                 <div class="stats-card">
@@ -236,13 +243,6 @@
                             <span class="format-icon">📄</span>
                             <span class="format-title">Text (.txt)</span>
                             <span class="format-desc">Clean readable document</span>
-                        </label>
-
-                        <label class="format-card">
-                            <input type="radio" name="exportFormat" value="json">
-                            <span class="format-icon">📦</span>
-                            <span class="format-title">JSON (.json)</span>
-                            <span class="format-desc">Full backup format</span>
                         </label>
                     </div>
                 </div>
