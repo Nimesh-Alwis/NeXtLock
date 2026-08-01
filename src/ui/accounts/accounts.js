@@ -763,6 +763,32 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Helper to normalize Brand Names for Grouping
+    function getNormalizedBrandKey(serviceName) {
+        if (!serviceName) return "Other";
+        const s = serviceName.trim().toLowerCase();
+
+        if (s.includes("google") || s.includes("gmail")) return "Google / Gmail";
+        if (s.includes("facebook") || s.includes("fb")) return "Facebook";
+        if (s.includes("insta")) return "Instagram";
+        if (s.includes("whatsapp") || s.includes("wa")) return "WhatsApp";
+        if (s.includes("tiktok")) return "TikTok";
+        if (s.includes("telegram")) return "Telegram";
+        if (s.includes("twitter") || s.includes("x.com") || s === "x") return "X (Twitter)";
+        if (s.includes("youtube") || s.includes("yt")) return "YouTube";
+        if (s.includes("github") || s.includes("git")) return "GitHub";
+        if (s.includes("netflix")) return "Netflix";
+        if (s.includes("spotify")) return "Spotify";
+        if (s.includes("paypal")) return "PayPal";
+        if (s.includes("reddit")) return "Reddit";
+        if (s.includes("pinterest") || s.includes("pin")) return "Pinterest";
+        if (s.includes("linkedin")) return "LinkedIn";
+        if (s.includes("snapchat") || s.includes("snap")) return "Snapchat";
+        if (s.includes("signal")) return "Signal";
+
+        return serviceName.trim().replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function renderAccounts(filterQuery = "") {
         accountList.innerHTML = "";
 
@@ -786,17 +812,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (currentViewMode === "grouped") {
-            // Group accounts by Service Brand Name
+            // Group accounts by Normalized Service Brand Name
             const groupsMap = new Map();
             filtered.forEach(acc => {
-                const serviceKey = acc.service.trim().toLowerCase();
-                if (!groupsMap.has(serviceKey)) {
-                    groupsMap.set(serviceKey, {
-                        displayName: acc.service.trim(),
+                const brandKey = getNormalizedBrandKey(acc.service);
+                if (!groupsMap.has(brandKey)) {
+                    groupsMap.set(brandKey, {
+                        displayName: brandKey,
                         accounts: []
                     });
                 }
-                groupsMap.get(serviceKey).accounts.push(acc);
+                groupsMap.get(brandKey).accounts.push(acc);
             });
 
             groupsMap.forEach((groupObj) => {
@@ -821,7 +847,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="brand-group-right">
                             <button class="btn-brand-add" title="Add another account under ${brandName}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                <span>+ Add Account</span>
+                                <span>Add Account</span>
                             </button>
                             <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </div>
