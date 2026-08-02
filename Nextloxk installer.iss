@@ -1,19 +1,31 @@
+; Script generated for Inno Setup 6+
+; NeXtLock Password Manager Desktop Installer Script
+
+#define MyAppName "NeXtLock"
+#define MyAppVersion "1.0.0"
+#define MyAppPublisher "Nimesh Alwis"
+#define MyAppURL "https://github.com/Nimesh-Alwis/NeXtLock"
+#define MyAppExeName "NeXtLock.exe"
+
 [Setup]
 AppId={{D37F2188-75A0-4F29-8422-C89C7172A2E6}}
-AppName=NeXtLock
-AppVersion=1.0.0
-AppPublisher=Nimesh Alwis
-SetupIconFile=Nextlock1.ico
-DefaultDirName={autopf}\NeXtLock
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
 DisableDirPage=no
-DefaultGroupName=NeXtLock
+DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=dist
 OutputBaseFilename=NeXtLock-Setup-v1.0.0
+SetupIconFile=Nextlock1.ico
+UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
-UninstallDisplayIcon={app}\NeXtLock.exe
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
@@ -24,13 +36,13 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "dist\win-unpacked\NeXtLock.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\win-unpacked\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\win-unpacked\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\NeXtLock"; Filename: "{app}\NeXtLock.exe"
-Name: "{group}\{cm:UninstallProgram,NeXtLock}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\NeXtLock"; Filename: "{app}\NeXtLock.exe"; Tasks: desktopicon
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\NeXtLock.exe"; Description: "{cm:LaunchProgram,NeXtLock}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
