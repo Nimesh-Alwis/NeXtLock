@@ -23,7 +23,7 @@
   "build": {
     "appId": "com.nextlock.app",
     "productName": "NeXtLock",
-    "icon": "Nextlock1.ico",
+    "icon": "Nextlock2.ico",
     "directories": {
       "output": "dist"
     },
@@ -31,13 +31,13 @@
       "main.js",
       "src/**/*",
       "index.html",
-      "Nextlock1.ico",
+      "Nextlock2.ico",
       "Nextlock2.png",
       "icon.png",
       "offcial icon logo.png"
     ],
     "win": {
-      "icon": "Nextlock1.ico",
+      "icon": "Nextlock2.ico",
       "target": [
         "nsis",
         "portable",
