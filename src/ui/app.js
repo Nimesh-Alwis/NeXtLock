@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "../login/login.html";
         return;
     }
-
+    //profileup
     // Get Active Profile Object
     const profiles = JSON.parse(localStorage.getItem("profiles") || "[]");
     const activeProfile = profiles.find(p => p.id === activeProfileId) || { name: "My Vault", avatar: "👤" };
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const userBadge = document.getElementById("lockVaultBtn");
     if (userBadge) {
         const isImage = activeProfile.avatar && (activeProfile.avatar.startsWith("data:image") || activeProfile.avatar.startsWith("http"));
-        const avatarHtml = isImage 
+        const avatarHtml = isImage
             ? `<img src="${activeProfile.avatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;" alt="Avatar">`
             : `<span>${activeProfile.avatar || "👤"}</span>`;
 
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoryList = document.getElementById("categoryList");
     const searchCategoryInput = document.getElementById("searchCategoryInput");
     const totalCategoryBadge = document.getElementById("totalCategoryBadge");
-    
+
     // Modal Elements
     const addCategoryModal = document.getElementById("addCategoryModal");
     const openAddCategoryModalBtn = document.getElementById("openAddCategoryModalBtn");
@@ -166,10 +166,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelCategoryModalBtn = document.getElementById("cancelCategoryModalBtn");
     const createBtn = document.getElementById("createBtn");
     const categoryInput = document.getElementById("categoryInput");
-    
+
     const emojiTabs = document.querySelectorAll(".emoji-tab");
     const iconOpts = document.querySelectorAll(".icon-opt");
-    
+
     let selectedIcon = "💬";
 
     // Lock Vault / Switch Profile Handlers
@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         categories.push(name);
         localStorage.setItem(catKey, JSON.stringify(categories));
-        
+
         // Save category icon mapping
         const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
         icons[name] = selectedIcon;
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!catName || typeof catName !== "string") return "📁";
         const icons = JSON.parse(localStorage.getItem(iconKey) || "{}");
         if (icons[catName]) return icons[catName];
-        
+
         const lower = catName.toLowerCase();
         if (lower.includes("social") || lower.includes("media") || lower.includes("chat")) return "💬";
         if (lower.includes("work") || lower.includes("job") || lower.includes("company")) return "💼";
@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderCategories(filterQuery = "") {
         categoryList.innerHTML = "";
-        
+
         const safeQuery = (filterQuery || "").trim().toLowerCase();
         const filtered = categories.filter(cat => typeof cat === "string" && cat.toLowerCase().includes(safeQuery));
         totalCategoryBadge.textContent = categories.length;
@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const catAccounts = accountsData[category] || [];
             const card = document.createElement("div");
             card.className = "category-card";
-            
+
             const isHiddenVault = category === "🕵️ Hidden Vault";
             if (isHiddenVault) {
                 card.style.border = "1px solid rgba(239, 68, 68, 0.4)";
@@ -672,7 +672,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         // Refresh active categories list
                         try {
                             categories = JSON.parse(localStorage.getItem(catKey) || "[]");
-                        } catch (err) {}
+                        } catch (err) { }
                         renderCategories();
                         showToast(`Successfully imported ${res.count} account(s) from .${file.name.split('.').pop()}`);
                     } else {
@@ -924,7 +924,7 @@ document.addEventListener("DOMContentLoaded", function () {
             parsedData.accounts[cat].forEach(newAcc => {
                 const exists = existingAccs[cat].some(
                     a => a.service.toLowerCase() === newAcc.service.toLowerCase() &&
-                         a.username.toLowerCase() === newAcc.username.toLowerCase()
+                        a.username.toLowerCase() === newAcc.username.toLowerCase()
                 );
                 if (!exists) {
                     existingAccs[cat].push(newAcc);

@@ -1,71 +1,64 @@
-// File Manager
-
 const fs = require("fs");
+const path = require("path");
+
+function getDataPath(fileName) {
+    let dataDir = path.join(__dirname, "../../data");
+    try {
+        const { app } = require("electron");
+        if (app && typeof app.getPath === "function") {
+            dataDir = path.join(app.getPath("userData"), "data");
+        }
+    } catch (e) {
+        // Fallback for non-electron runtime
+    }
+
+    if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    return path.join(dataDir, `${fileName}.md`);
+}
 
 // Create file
 function createFile(fileName) {
-
     console.log("Creating file...");
-
-    fs.writeFileSync(
-        `./data/${fileName}.md`,
-        ""
-    );
-
-    console.log(
-        `${fileName}.md created`
-    );
-
+    const filePath = getDataPath(fileName);
+    fs.writeFileSync(filePath, "");
+    console.log(`${fileName}.md created at ${filePath}`);
 }
 
 // Read file
 function readFile(fileName) {
-
-    const content = fs.readFileSync(
-        `data/${fileName}.md`,
-        "utf8"
-    );
-
+    const filePath = getDataPath(fileName);
+    if (!fs.existsSync(filePath)) return null;
+    const content = fs.readFileSync(filePath, "utf8");
     console.log(content);
+    return content;
 }
 
 // Write file
 function writeFile(fileName, content) {
-
-    fs.writeFileSync(
-        `data/${fileName}.md`,
-        content
-    );
-
-    console.log(
-        `${fileName}.md updated`
-    );
-
+    const filePath = getDataPath(fileName);
+    fs.writeFileSync(filePath, content);
+    console.log(`${fileName}.md updated at ${filePath}`);
 }
 
 // Delete file
-// Delete file
 function deleteFile(fileName) {
-
-    fs.unlinkSync(
-        `data/${fileName}.md`
-    );
-
-    console.log(
-        `${fileName}.md deleted`
-    );
+    const filePath = getDataPath(fileName);
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`${fileName}.md deleted`);
+    }
 }
 
 function renameFile(oldFileName, newFileName) {
-
-    fs.renameSync(
-        `./data/${oldFileName}.md`,
-        `./data/${newFileName}.md`
-    );
-
-    console.log(
-        `${oldFileName}.md renamed to ${newFileName}.md`
-    );
+    const oldPath = getDataPath(oldFileName);
+    const newPath = getDataPath(newFileName);
+    if (fs.existsSync(oldPath)) {
+        fs.renameSync(oldPath, newPath);
+        console.log(`${oldFileName}.md renamed to ${newFileName}.md`);
+    }
 }
 
 // TEST

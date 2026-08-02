@@ -36,11 +36,17 @@
         "nsis",
         "portable",
         "zip"
-      ]
+      ],
+      "forceCodeSigning": false
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NeXtLock"
     }
   }
 }
