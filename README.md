@@ -13,6 +13,32 @@
 
 ---
 
+## 📸 Application Screenshots & UI Showcase
+
+<div align="center">
+
+### 🔐 Profile Selection & Authentication
+![Profile Selection & Login](<gitpush images/Screenshot 2026-08-02 231545.png>)
+
+### 📂 Vault Categories Dashboard
+![Vault Categories Dashboard](<gitpush images/Screenshot 2026-08-02 231701.png>)
+
+### 🔑 Accounts & Credential Management
+![Accounts & Credential Management](<gitpush images/Screenshot 2026-08-02 231918.png>)
+
+### ➕ Add New Account Credential
+![Add New Account Modal](<gitpush images/Screenshot 2026-08-02 232049.png>)
+
+### 🕵️ Master Password Verification
+![Master Password Verification Modal](<gitpush images/Screenshot 2026-08-02 232253.png>)
+
+### 🏷️ Category Management & Emoji Selector
+![Add & Edit Category Modal](<gitpush images/Screenshot 2026-08-02 232446.png>)
+
+</div>
+
+---
+
 ## 🌟 Key Features
 
 ### 👤 Multi-User Profile System
