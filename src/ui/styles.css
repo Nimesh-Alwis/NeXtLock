@@ -203,10 +203,10 @@ body {
 }
 
 .brand-logo img.brand-ico {
-    width: 90px;
-    height: 90px;
+    width: 170px;
+    height: 170px;
     object-fit: contain;
-    filter: drop-shadow(0 4px 14px rgba(59, 130, 246, 0.45));
+    filter: drop-shadow(0 6px 18px rgba(59, 130, 246, 0.5));
     transition: transform 0.3s ease;
 }
 
