@@ -86,7 +86,7 @@ npm run pack
 2. Open **Inno Setup Compiler**.
 3. Open [`installer.iss`](file:///f:/MY_projects/NeXtLocK/installer.iss) (or `Nextloxk installer.iss`).
 4. Click **Build ➡️ Compile** (or press `Ctrl + F9`).
-5. Your custom setup executable `dist/NeXtLock-Setup-v1.0.0.exe` will be ready!
+5. Your custom setup executable `dist/NeXtLock-Setup-v1.2.0.exe` will be ready!
 
 ### Option C: Build via Electron-Builder (NSIS)
 ```bash
