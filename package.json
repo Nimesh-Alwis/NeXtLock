@@ -1,6 +1,6 @@
 {
   "name": "nextlock",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "NeXtLock - Premium Password Manager Desktop App",
   "main": "main.js",
   "scripts": {

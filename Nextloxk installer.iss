@@ -2,7 +2,7 @@
 ; NeXtLock Password Manager Desktop Installer Script
 
 #define MyAppName "NeXtLock"
-#define MyAppVersion "1.2.0"
+#define MyAppVersion "1.2.1"
 #define MyAppPublisher "Nimesh Alwis"
 #define MyAppURL "https://github.com/Nimesh-Alwis/NeXtLock"
 #define MyAppExeName "NeXtLock.exe"
@@ -20,7 +20,7 @@ DisableDirPage=no
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=dist
-OutputBaseFilename=NeXtLock-Setup-v1.2.0
+OutputBaseFilename=NeXtLock-Setup-v1.2.1
 SetupIconFile=Nextlock2.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
