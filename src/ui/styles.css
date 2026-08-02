@@ -69,8 +69,13 @@ body {
 }
 
 @keyframes floatOrb {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(50px, 50px) scale(1.1); }
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(50px, 50px) scale(1.1);
+    }
 }
 
 /* MacOS Window Container */
@@ -115,9 +120,17 @@ body {
     cursor: pointer;
 }
 
-.control.close { background: #ff5f56; }
-.control.minimize { background: #ffbd2e; }
-.control.maximize { background: #27c93f; }
+.control.close {
+    background: #ff5f56;
+}
+
+.control.minimize {
+    background: #ffbd2e;
+}
+
+.control.maximize {
+    background: #27c93f;
+}
 
 .window-title {
     position: absolute;
@@ -170,25 +183,35 @@ body {
 
 .brand {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
     font-family: 'Outfit', sans-serif;
     font-size: 22px;
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     color: #ffffff;
+    width: 100%;
 }
 
 .brand-logo {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-    border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.brand-logo img.brand-ico {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 14px rgba(59, 130, 246, 0.45));
+    transition: transform 0.3s ease;
+}
+
+.brand-logo img.brand-ico:hover {
+    transform: scale(1.05);
 }
 
 .brand span span {
@@ -678,10 +701,12 @@ body {
 .icon-options-grid::-webkit-scrollbar {
     width: 5px;
 }
+
 .icon-options-grid::-webkit-scrollbar-track {
     background: rgba(15, 23, 42, 0.5);
     border-radius: 4px;
 }
+
 .icon-options-grid::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 4px;
@@ -764,8 +789,15 @@ body {
 }
 
 @keyframes toastIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .btn-export-sidebar {
@@ -859,7 +891,8 @@ body {
     accent-color: var(--primary-blue);
 }
 
-.format-card:hover, .format-card.active {
+.format-card:hover,
+.format-card.active {
     background: rgba(59, 130, 246, 0.15);
     border-color: var(--primary-blue);
     transform: translateY(-2px);

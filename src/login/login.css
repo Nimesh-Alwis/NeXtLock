@@ -63,8 +63,13 @@ body {
 }
 
 @keyframes floatOrb {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, 40px) scale(1.1); }
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate(40px, 40px) scale(1.1);
+    }
 }
 
 /* Main Window Container */
@@ -105,9 +110,17 @@ body {
     border-radius: 50%;
 }
 
-.control.close { background: #ff5f56; }
-.control.minimize { background: #ffbd2e; }
-.control.maximize { background: #27c93f; }
+.control.close {
+    background: #ff5f56;
+}
+
+.control.minimize {
+    background: #ffbd2e;
+}
+
+.control.maximize {
+    background: #27c93f;
+}
 
 .window-title {
     position: absolute;
@@ -136,16 +149,23 @@ body {
 }
 
 .logo-badge {
-    width: 72px;
-    height: 72px;
-    border-radius: 20px;
+    width: 105px;
+    height: 105px;
+    border-radius: 10px;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 2px solid rgba(59, 130, 246, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     color: #60a5fa;
-    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 14px 35px -5px rgba(59, 130, 246, 0.45);
+}
+
+.logo-badge img.brand-ico {
+    width: 118px;
+    height: 118px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 14px rgba(59, 130, 246, 0.55));
 }
 
 .brand-title {
@@ -481,7 +501,8 @@ body {
     cursor: pointer;
 }
 
-.avatar-pill:hover, .avatar-pill.active {
+.avatar-pill:hover,
+.avatar-pill.active {
     background: rgba(59, 130, 246, 0.25);
     border-color: var(--accent-blue);
     transform: scale(1.1);

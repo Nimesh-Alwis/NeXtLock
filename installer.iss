@@ -3,6 +3,7 @@ AppId={{D37F2188-75A0-4F29-8422-C89C7172A2E6}}
 AppName=NeXtLock
 AppVersion=1.0.0
 AppPublisher=Nimesh Alwis
+SetupIconFile=Nextlock1.ico
 DefaultDirName={autopf}\NeXtLock
 DisableDirPage=no
 DefaultGroupName=NeXtLock

@@ -10,6 +10,7 @@ function createWindow() {
         minWidth: 950,
         minHeight: 650,
         title: 'NeXtLock Vault Security',
+        icon: path.join(__dirname, 'Nextlock1.ico'),
         autoHideMenuBar: true,
         backgroundColor: '#090d16',
         webPreferences: {
